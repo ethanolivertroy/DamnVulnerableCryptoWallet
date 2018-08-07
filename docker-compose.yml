@@ -1,0 +1,21 @@
+version: '3'
+services:
+  ganache:
+    image: trufflesuite/ganache-cli
+    command: '--hostname=0.0.0.0 --mnemonic "candy maple cake sugar pudding cream honey rich smooth crumble sweet treat" --db "./"'
+    ports:
+     - "8545:8545"
+
+  truffle:
+    build: blockchain
+    command: 'truffle migrate'
+    links:
+     - ganache
+
+  web-api:
+    build: web-api
+    ports:
+     - "3000:3000"
+    command: 'yarn start'
+    depends_on:
+     - truffle

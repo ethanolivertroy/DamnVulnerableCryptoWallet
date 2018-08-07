@@ -1,0 +1,4 @@
+build/
+test/
+bchain/test/
+start-*.sh

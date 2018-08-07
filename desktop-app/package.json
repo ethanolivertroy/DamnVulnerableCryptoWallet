@@ -1,0 +1,49 @@
+{
+  "name": "dvcw-desktop-app",
+  "version": "0.2.1",
+  "description": "Desktop app for DVCW",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "pack": "node packager.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/badbounty/dvcw"
+  },
+  "keywords": [
+    "desktop app",
+    "electron",
+    "vulnerable",
+    "cryptowallet"
+  ],
+  "author": "BadBounty",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "electron-log": "^2.2.14",
+    "materialize-css": "^0.100.2",
+    "moment": "^2.21.0",
+    "qrcode": "^1.2.0",
+    "speakeasy": "^2.0.0",
+    "vue": "^2.5.13"
+  },
+  "devDependencies": {
+    "electron": "1.6.7",
+    "electron-packager": "^11.0.1"
+  },
+  "build": {
+    "name": "DVCW",
+    "dir": "./",
+    "asar": true,
+    "appCopyright": "BadBounty",
+    "protocols": [
+      {
+        "name": "DVCW",
+        "schemes": [
+          "dvcw"
+        ]
+      }
+    ]
+  }
+}

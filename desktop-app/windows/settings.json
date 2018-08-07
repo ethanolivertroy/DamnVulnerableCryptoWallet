@@ -1,0 +1,46 @@
+{
+    "mainWindow": {
+        "width": 1150,
+        "height": 750,
+        "title": "DVCW",
+        "show": false,
+        "autoHideMenuBar": true
+    },
+    "childWindow": {
+        "modal": true,
+        "resizable": false,
+        "maximizable": false,
+        "minimizable": false,
+        "show": false,
+        "autoHideMenuBar": true
+    },
+    "twoFactorAuthWindow": {
+        "width": 600,
+        "height": 300,
+        "modal": true,
+        "title": "DVCW - Two factor authentication",
+        "resizable": false,
+        "maximizable": false,
+        "minimizable": false,
+        "show": false,
+        "autoHideMenuBar": true
+    },
+    "serverSettingsWindow": {
+        "width": 600,
+        "height": 300,
+        "title": "DVCW - Server settings",
+        "resizable": false,
+        "maximizable": false,
+        "minimizable": false,
+        "show": false,
+        "autoHideMenuBar": true
+    },
+    "authWindow": {
+        "width": 420,
+        "height": 600,
+        "resizable": false,
+        "maximizable": false,
+        "minimizable": false,
+        "autoHideMenuBar": true
+    }
+}
