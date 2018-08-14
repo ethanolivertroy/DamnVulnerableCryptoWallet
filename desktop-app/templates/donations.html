@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DVCW - Donations</title>
+    <link rel="stylesheet" href="../node_modules/materialize-css/dist/css/materialize.min.css" media="screen,projection">    
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <script src="../node_modules/vue/dist/vue.min.js"></script>
+</head>
+<body>
+    <div id="donations-root">
+        <div class="section">
+            <div class="container">
+                <h4 class="header center">Make a donation</h4>
+                <!-- Error messages -->
+                <div v-cloak class="row center">
+                    <div class="col s2"></div>
+                    <div class="col s8">
+                        <div id="error-box" v-show="error.length > 0" class="card-panel red darken-1">
+                            {{error}}
+                            <i @click="dismissError" style="cursor: pointer;" class="material-icons right" id="alert-close">close</i>
+                        </div>
+                        <div id="message-box" v-show="message.length > 0" class="card-panel green lighten-1">
+                            {{message}}
+                            <i @click="dismissMessage" style="cursor: pointer;" class="material-icons right" id="alert-close">close</i>
+                            <br>
+                        </div>
+                    </div>
+                    <div class="col s2"></div>
+                </div>
+                <!-- Donations data -->
+                <blockquote>
+                    As we want to make this as transparent as possible, the whole donation process is managed by
+                    an autonomous smart contract, which you can find at 
+                    <span style="cursor: pointer;" class="colorize" @click="openModal()">
+                        <strong>{{address}}</strong>
+                    </span>
+                </blockquote>
+                <div class="row">
+                    <div class="col s6">
+                        <h5>You have donated <span class="colorize">{{donationTotal}} ETH</span></h5>
+                    </div>
+                </div>
+                <!-- Donation form -->
+                <div class="row">
+                    <div class="col s12">
+                        <div class="row center">
+                            <div class="input-field col s5">
+                                <input id="donationAmount" type="number" v-model="donationAmount" min="0">
+                                <label for="donationAmount" class="active">Amount to donate</label>
+                            </div>
+                            <div class="col s2">
+                                <button :disabled="donationAmount == 0" @click="openTwoFactorAuth" class="waves-effect waves-light btn tooltipped" data-position="bottom" data-delay="50" data-tooltip="Make the donation!">
+                                    Donate
+                                </button>
+                            </div>
+                        </div>                        
+                    </div>
+                </div>
+                <div id="modal-contract" class="modal">
+                    <div class="modal-content">
+                        <h5 class="light">Donations smart contract</h5>
+                        <hr>
+                        <div>
+                            <pre>
+                                <code>
+pragma solidity ^0.4.21;
+
+contract Donations {
+    mapping(address => uint) public donations;
+    address public owner;
+
+    modifier onlyOwner() {
+        require(owner == msg.sender);
+        _;
+    }
+
+    function Donations() public payable {
+        owner = msg.sender;
+        donations[msg.sender] = msg.value;
+    }
+
+    function withdrawDonation(address _donor, uint _amount) public onlyOwner {
+        require(donations[_donor] - _amount >= 0);
+        _donor.call.value(_amount)();
+        donations[_donor] -= _amount;
+    }
+
+    function getDonationAmount(address _donor) view public returns (uint) {
+        return donations[_donor];
+    }
+
+    function donate() public payable {
+        require(msg.value > 0);
+        donations[msg.sender] += msg.value;
+    }
+
+    function newOwner(address _newOwner) {
+        require(tx.origin == msg.sender);
+        owner = _newOwner;
+    }
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="../node_modules/hammerjs/hammer.min.js"></script>
+    <script src="../node_modules/materialize-css/dist/js/materialize.min.js"></script>
+    <script src="../render/donations.render.js"></script>
+</body>
+</html>

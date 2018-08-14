@@ -1,0 +1,9 @@
+{
+    "wallet" : {
+        "walletId": "",        
+        "publicAddress": "",
+        "seedEncrypted": "",
+        "balance": 0,
+        "twoFactorAuthKey": ""
+    }
+}

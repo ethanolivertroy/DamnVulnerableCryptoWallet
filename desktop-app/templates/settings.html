@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DVCW - Settings</title>
+    <link rel="stylesheet" href="../node_modules/materialize-css/dist/css/materialize.min.css" media="screen,projection">    
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <script src="../node_modules/vue/dist/vue.min.js"></script>
+</head>
+<body>
+    <div id="settings-root">
+        <div class="section">
+            <div class="container">
+                <h4 class="header">Settings</h4>
+                <!-- NOTIFICATIONS -->
+                <div v-cloak class="row center">
+                    <div class="col s3"></div>
+                    <div class="col s6">
+                        <div id="error-box" v-show="error.length > 0" class="card-panel red darken-1">
+                            {{error}}
+                            <i @click="dismissError" style="cursor: pointer;" class="material-icons right" id="alert-close">close</i>
+                        </div>
+                        <div id="message-box" v-show="message.length > 0" class="card-panel green lighten-1">
+                            {{message}}
+                            <i @click="dismissMessage" style="cursor: pointer;" class="material-icons right" id="alert-close">close</i>
+                        </div>
+                    </div>
+                    <div class="col s3"></div>
+                </div>
+                <!-- PROFILE -->
+                <div class="row">
+                    <div class="col s12">
+                        <h5 class="header light">
+                            <i class="material-icons">person_outline</i>&nbsp;Profile
+                        </h5>
+                        <div class="row">
+                            <div class="col s4">
+                                <input type="text" v-model="settings.profile.firstname" placeholder="First name">
+                            </div>
+                            <div class="col s4">
+                                <input type="text" v-model="settings.profile.lastname" placeholder="Last name">
+                            </div>
+                            <div class="col s4">
+                                <input type="email" v-model="settings.profile.email" placeholder="email@example.com">
+                            </div>
+                        </div>                        
+                        <button @click="saveProfileChanges" class="waves-effect waves-light btn">
+                            Update profile
+                        </button>
+                    </div>
+                </div>
+                <!-- 2FA -->
+                <div class="row">
+                    <div class="col s12">
+                        <h5 class="header light">Two factor authentication</h5>
+                        <p>Sync your token management app with this QR code</p>
+                        <div class="row center">
+                            <div class="col s3"></div>
+                            <div class="col s6">
+                                <!-- QR Code -->
+                                <img v-once v-if="!settings.qrcode.loading" class="responsive-img" :src="settings.qrcode.data">
+                                <!-- Spinner -->
+                                <div v-else class="preloader-wrapper active">
+                                    <div class="spinner-layer spinner-blue-only">
+                                        <div class="circle-clipper left">
+                                        <div class="circle"></div>
+                                        </div><div class="gap-patch">
+                                        <div class="circle"></div>
+                                        </div><div class="circle-clipper right">
+                                        <div class="circle"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col s3"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- CHANGE PASSWORD -->
+                <div class="row">
+                    <div class="col s12">
+                        <h5 class="header light">
+                            <i class="material-icons">https</i>&nbsp;Change password
+                        </h5>
+                        <div class="row">
+                            <div class="col s6">
+                                <input type="password" v-model="settings.password.old" placeholder="Current password">
+                            </div>
+                            <div class="col s6">
+                                <input type="password" v-model="settings.password.new" placeholder="New password">
+                            </div>
+                        </div>
+                        <button @click="savePasswordChanges" class="waves-effect waves-light btn">
+                            Save changes
+                        </button>
+                    </div>
+                </div>
+                <!-- CHANGE SERVER -->
+                <div class="row">
+                    <div class="col s12">
+                        <h5 class="header light">
+                            <i class="material-icons">cloud_queue</i>&nbsp;Change server address
+                        </h5>
+                        <div class="row">
+                            <div class="col s12">
+                                <p>You should restart the app for this change to take place</p>
+                                <input type="text" v-model="settings.server" placeholder="For example: http://localhost:3000/">
+                            </div>
+                        </div>
+                        <button @click="saveServerChanges" class="waves-effect waves-light btn">
+                            Save changes
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../render/settings.render.js"></script>
+</body>
+</html>

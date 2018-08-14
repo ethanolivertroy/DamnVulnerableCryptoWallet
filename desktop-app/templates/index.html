@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../node_modules/materialize-css/dist/css/materialize.min.css" media="screen,projection">    
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <script src="../node_modules/vue/dist/vue.min.js"></script>
+    <title>DVCW</title>
+</head>
+<body>
+    <div id="app-root">
+        <nav class="grey darken-3" role="navigation">
+            <div class="nav-wrapper container-fluid">
+                <a class="brand-logo left light">&nbsp;{{wallet.balance}} ETH</a>
+                <a class="brand-logo center">DVCW</a>
+                <ul class="right">
+                    <li>
+                        <!-- Donations -->
+                        <a @click="openDonations" class="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Donate">
+                            <i class="material-icons">favorite_border</i>
+                        </a>
+                    </li>
+                    <li>
+                        <!-- Lottery -->
+                        <a @click="openLottery" class="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Lottery">
+                            <i class="material-icons">casino</i>
+                        </a>
+                    </li>
+                    <li>
+                        <!-- Copy -->
+                        <a @click="copyAddress" class="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Copy your address">
+                            <i class="material-icons">content_copy</i>
+                        </a>
+                    </li>
+                    <li>
+                        <!-- Settings -->
+                        <a @click="openSettings" class="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Settings">
+                            <i class="material-icons">settings</i>
+                        </a>
+                    </li>                    
+                </ul>
+            </div>
+        </nav>
+        <div v-cloak id="alerts" class="section no-pad-bot">
+            <div class="container">
+                <div class="row center">
+                    <div class="col s4"></div>
+                    <div class="col s4">
+                        <div id="error-box" v-show="error.length" class="card-panel red darken-1">
+                            {{error}}
+                            <i @click="dismissError" style="cursor: pointer;" class="material-icons right" id="alert-close">close</i>
+                        </div>
+                        <div id="message-box" v-show="message.length" class="card-panel green lighten-1">
+                            {{message}}
+                            <i @click="dismissMessage" style="cursor: pointer;" class="material-icons right" id="alert-close">close</i>
+                        </div>
+                    </div>
+                    <div class="col s4"></div>
+                </div>
+            </div>
+        </div> <!-- /#alerts -->
+        <div class="container">
+            <div class="row">
+                <div class="col s12">                    
+                    <table v-cloak id="transactions">
+                        <thead>
+                            <tr>
+                                <th>When</th>
+                                <th>From</th>
+                                <th>To</th>
+                                <th>Amount</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="t in transactions">
+                                <td>{{t.timestamp | formatDate}}</td>
+                                <td v-if="t.from.toLowerCase() == wallet.publicAddress.toLowerCase()">You</td>
+                                <td v-else>{{t.from}}</td>
+                                <td v-if="t.to.toLowerCase() == wallet.publicAddress.toLowerCase()">You</td>
+                                <td v-else>{{t.to}}</td>
+                                <td>{{t.value}}</td>
+                                <td>
+                                    <div v-if="t.message">
+                                        <!-- Open modal button -->                                        
+                                        <i class="small material-icons"
+                                           style="cursor: pointer;"
+                                           @click="openModal(t.nonce)">
+                                                mail_outline
+                                        </i>                                        
+                                        <!-- Modal panel -->
+                                        <div :id="'modal-' + t.nonce" class="modal">
+                                            <div class="modal-content">
+                                                <h5 class="light">Message</h5>
+                                                <hr>
+                                                <blockquote v-html="t.message"></blockquote>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div v-else class="center">
+                                        <span class="grey-text text-lighten-1">-</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot v-if="!transactions.length">
+                            <tr>
+                                <td class="center" colspan="4">
+                                    <span class="grey-text text-lighten-1">No transactions yet</span>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    <ul v-if="transactions.length" class="pagination center">
+                        <li v-show="currentPage > 1" style="cursor: pointer;" @click="changePage(currentPage - 1)">
+                            <i class="material-icons">navigate_before</i>
+                        </li>
+                        <li class="waves-effect">{{currentPage}}</li>
+                        <li v-show="next" style="cursor: pointer;" @click="changePage(currentPage + 1)">
+                            <i class="material-icons">navigate_next</i>
+                        </li>
+                    </ul>                    
+                </div>
+            </div>
+            <!-- Transaction form -->
+            <div id="tx-form" class="row center">
+                <div class="input-field col s5">
+                    <input id="toAddr" type="text" v-model.trim="tx.toAddr" maxlength="42" placeholder="0x123abc...">
+                    <label for="toAddr" class="active">To</label>
+                </div>
+                <div class="input-field col s2">
+                    <input id="amount" type="number" v-model.number="tx.value" min="0.00" :max="wallet.balance" step="0.01" placeholder="0.00">
+                    <label for="amount" class="active">Amount</label>
+                </div>
+                <div class="input-field col s3">
+                    <input id="shortMessage" type="text" v-model.trim="tx.message" placeholder="Your message...">
+                    <label for="shortMessage" class="active">Short message</label>
+                </div>
+                <div class="col s2">
+                    <button @click="openTwoFactorAuth" class="waves-effect waves-light btn tooltipped" data-position="bottom" data-delay="50" data-tooltip="Submit your transaction">
+                        send                        
+                    </button>                    
+                </div>
+            </div>
+        </div> <!-- /.container -->
+    </div> <!-- /#app-root -->
+    <script src="../node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="../node_modules/hammerjs/hammer.min.js"></script>
+    <script src="../node_modules/materialize-css/dist/js/materialize.min.js"></script>
+    <script src="../render/index.render.js"></script>
+</body>
+</html>

@@ -1,0 +1,178 @@
+{
+    "secureKey": "ZEdoMVoyeHBabVU9",
+    "database": "./data/dvcw.db",
+    "port": 3000,
+    "ganacheServer": "http://localhost:7545",
+    "defaultMnemonic": "candy maple cake sugar pudding cream honey rich smooth crumble sweet treat",
+    "walletIndex": 0,
+    "derivationPath": "m/44'/60'/0'/0",
+    "contracts": [
+        {
+            "contractName": "Lottery",
+            "abi": [
+                {
+                    "constant": true,
+                    "inputs": [],
+                    "name": "lastResult",
+                    "outputs": [
+                        {
+                            "name": "",
+                            "type": "uint8"
+                        }
+                    ],
+                    "payable": false,
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "constant": true,
+                    "inputs": [],
+                    "name": "winner",
+                    "outputs": [
+                        {
+                            "name": "",
+                            "type": "bool"
+                        }
+                    ],
+                    "payable": false,
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "inputs": [
+                        {
+                            "name": "_seed",
+                            "type": "uint256"
+                        }
+                    ],
+                    "payable": true,
+                    "stateMutability": "payable",
+                    "type": "constructor"
+                },
+                {
+                    "constant": false,
+                    "inputs": [
+                        {
+                            "name": "_bet",
+                            "type": "uint8"
+                        }
+                    ],
+                    "name": "bet",
+                    "outputs": [
+                        {
+                            "name": "",
+                            "type": "bool"
+                        }
+                    ],
+                    "payable": true,
+                    "stateMutability": "payable",
+                    "type": "function"
+                }
+            ]
+        },
+        {
+            "contractName": "Donations",
+            "abi": [
+                {
+                    "constant": true,
+                    "inputs": [],
+                    "name": "owner",
+                    "outputs": [
+                        {
+                            "name": "",
+                            "type": "address"
+                        }
+                    ],
+                    "payable": false,
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "constant": true,
+                    "inputs": [
+                        {
+                            "name": "",
+                            "type": "address"
+                        }
+                    ],
+                    "name": "donations",
+                    "outputs": [
+                        {
+                            "name": "",
+                            "type": "uint256"
+                        }
+                    ],
+                    "payable": false,
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "inputs": [],
+                    "payable": true,
+                    "stateMutability": "payable",
+                    "type": "constructor"
+                },
+                {
+                    "constant": false,
+                    "inputs": [
+                        {
+                            "name": "_donor",
+                            "type": "address"
+                        },
+                        {
+                            "name": "_amount",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "withdrawDonation",
+                    "outputs": [],
+                    "payable": false,
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                },
+                {
+                    "constant": true,
+                    "inputs": [
+                        {
+                            "name": "_donor",
+                            "type": "address"
+                        }
+                    ],
+                    "name": "getDonationAmount",
+                    "outputs": [
+                        {
+                            "name": "",
+                            "type": "uint256"
+                        }
+                    ],
+                    "payable": false,
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "constant": false,
+                    "inputs": [],
+                    "name": "donate",
+                    "outputs": [],
+                    "payable": true,
+                    "stateMutability": "payable",
+                    "type": "function"
+                },
+                {
+                    "constant": false,
+                    "inputs": [
+                        {
+                            "name": "_newOwner",
+                            "type": "address"
+                        }
+                    ],
+                    "name": "newOwner",
+                    "outputs": [],
+                    "payable": false,
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DVCW - Server settings</title>
+    <link rel="stylesheet" href="../node_modules/materialize-css/dist/css/materialize.min.css" media="screen,projection">    
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <script src="../node_modules/vue/dist/vue.min.js"></script>
+</head>
+<body>
+    <div id="server-settings-root">
+        <div class="section">
+            <div class="container">
+                <div v-cloak class="row center">
+                    <div class="col s3"></div>
+                    <div class="col s6">
+                        <div id="errorBox" v-show="error.length > 0" class="card-panel red darken-1">
+                            {{error}}
+                            <i @click="dismissError" style="cursor: pointer;" class="material-icons right" id="alert-close">close</i>
+                        </div>
+                        <div id="messageBox" v-show="message.length > 0" class="card-panel green lighten-1">
+                            {{message}}
+                            <i @click="dismissMessage" style="cursor: pointer;" class="material-icons right" id="alert-close">close</i>
+                        </div>
+                    </div>
+                    <div class="col s3"></div>
+                </div>               
+                <!-- CHANGE SERVER -->
+                <div class="row">
+                    <div class="col s12">
+                        <h5 id="header" class="header light">
+                            <i class="material-icons">cloud_queue</i>&nbsp;Server address
+                        </h5>
+                        <div class="row">
+                            <div class="col s12">
+                                <input id="serverAddress" type="text" v-model="server" placeholder="For example: http://localhost:3000/">
+                            </div>
+                        </div>
+                        <button id="btnReady" @click="saveServerChanges" class="waves-effect waves-light btn">
+                            Ready
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../render/server-settings.render.js"></script>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DVCW - Register</title>
+    <link rel="stylesheet" href="../node_modules/materialize-css/dist/css/materialize.min.css" media="screen,projection">    
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <script src="../node_modules/vue/dist/vue.min.js"></script>
+</head>
+<body>
+    <div id="register-root">
+        <div class="section">
+            <div class="container">
+                <h3 id="mainHeader" class="header center">Welcome to DVCW</h3>
+                <div class="row">
+                    <div class="col s12">
+                        <ul id="tabs" class="tabs">
+                            <li id="tabRegister" class="tab col s6">
+                                <a class="active" href="#tabRegisterContent">Register</a>
+                            </li>
+                            <li id="tabRecover" class="tab col s6">
+                                <a href="#tabRecoverContent">Recover</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div v-cloak id="errorBox" v-show="error.length > 0" class="card-panel red darken-1 center">
+                    {{error}}
+                    <i @click="dismissError" style="cursor: pointer;" class="material-icons right" id="alert-close">close</i>
+                </div>
+                <!-- REGISTER FORM -->
+                <div id="tabRegisterContent">
+                    <div class="row center">
+                        <h5 id="subHeader" class="header col s12 light">Please enter your new password</h5>                        
+                    </div>
+                    <div class="row">
+                        <div class="col s1"></div>
+                        <div class="col s10">
+                            <input id="password" type="password" v-model="password" placeholder="Password">
+                            <input id="confirm" type="password" v-model="confirm" placeholder="Confirm password">                        
+                        </div>
+                        <div class="col s1"></div>
+                    </div>
+                    <div class="row center">
+                        <div class="col s12">
+                            <div v-if="mnemonic.length">
+                                <h6 id="warningHeader" class="header light">This is your wallet recovery phrase. Make sure to save it before proceeding.</h6>
+                                <blockquote>{{mnemonic}}</blockquote>
+                            </div>                            
+                            <button :disabled="password.length == 0" @click="register" class="waves-effect waves-light btn">
+                                Ready
+                                <i class="material-icons right">send</i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- RECOVER FORM -->
+                <div id="tabRecoverContent">
+                    <div class="row center">
+                        <h5 class="header col s12 light">Please enter your wallet recovery phrase</h5>
+                    </div>
+                    <div class="row center">
+                        <div class="col s1"></div>
+                        <div class="col s10">
+                            <input type="text" v-model="phrase" placeholder="Recovery phrase">
+                            <button :disabled="phrase.length == 0" @click="recover" class="waves-effect waves-light btn">
+                                Ready
+                                <i class="material-icons right">send</i>
+                            </button>
+                        </div>
+                        <div class="col s1"></div>
+                    </div>
+                </div>                
+            </div>
+        </div>
+    </div>
+    <script src="../node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="../node_modules/hammerjs/hammer.min.js"></script>
+    <script src="../node_modules/materialize-css/dist/js/materialize.min.js"></script>
+    <script src="../render/register.render.js"></script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+body, .modal, .tabs {
+    color: #fff;
+    background-color: #333;
+    text-shadow: 0 .05rem .1rem rgba(0,0,0,.5);
+}
+
+.tabs .tab a {
+    color: #fff;
+}
+
+.tabs .tab a:hover, .tabs .tab a.active {
+    color: #2ab7a9;
+}
+
+.tabs .indicator {
+    background-color: #2ab7a9;
+}
+
+blockquote {
+    border-left: 5px solid #2ab7a9;
+    font-size: 1.15rem;
+}
+
+.colorize {
+    color: #2ab7a9;
+}
+
+tr {
+    line-height: 1.10;
+}
+
+[v-cloak] {
+    display: none;
+}
+
+/* fallback */
+@font-face {
+  font-family: 'Material Icons';
+  font-style: normal;
+  font-weight: 400;
+  src: url(../fonts/material-icons.woff2) format("woff2");
+}
+
+.material-icons {
+  font-family: "Material Icons";
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased;
+}
