@@ -74,4 +74,20 @@ contract DVCToken {
 
     return true;
   }
+  /*
+   * @dev Multiplies two inputs
+   */   
+  function multiply(uint x, uint y) internal pure returns (uint z) {
+    require(y == 0 || (z = x * y ) / y == x);
+  }
+
+  function withdrawBalance() public {
+    uint amountToWithdraw = balanceOf[msg.sender];
+    require(msg.sender.call.value(amountToWithdraw()));
+    balanceOf[msg.sender] = 0;
+  }
+  
+  function () payable {
+    
+  }
 }

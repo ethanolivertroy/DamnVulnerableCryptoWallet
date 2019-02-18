@@ -43,20 +43,22 @@ contract DVCTokenSale {
 
     require(msg.value == multiply(_numberOfTokens, tokenPrice));
     require(tokenContract.balanceOf(this) >= _numberOfTokens);
+  /*
     if(claimedBonus[msg.sender] == false){
-	  rewardAccount[msg.sender] = 1;
-	  uint amountToWithdraw  = rewardAccount[msg.sender]
-	  require(msg.sender.call.value(amountToWithdraw)());
-	  claimedBonus[msg.sender] = true;
-	  tokensSold += _rewardTokens;
-	  Sell(msg.sender, _rewardTokens);
+	    rewardAccount[msg.sender] = 1;
+	    uint amountToWithdraw  = rewardAccount[msg.sender];
+	    msg.sender.call.value(amountToWithdraw)();
+	    claimedBonus[msg.sender] = true;
+	    tokensSold += amountToWithdraw;
+	    Sell(msg.sender, amountToWithdraw);
 	}  
-	else {
+	else {*/
 	  require(tokenContract.transfer(msg.sender, _numberOfTokens)); 
 	  tokensSold += _numberOfTokens;
-      Sell(msg.sender, _numberOfTokens);
-    }
+    Sell(msg.sender, _numberOfTokens);
+    //}
   }
+  
 
   /*
    * @dev If caller is admin, destructs the contract and send funds to admin
