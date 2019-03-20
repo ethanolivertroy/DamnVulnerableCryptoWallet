@@ -15,20 +15,30 @@ contract DVCTokenSale {
   uint256 public tokenPrice;
   uint256 public tokensSold;
   bytes32 private secret;
+
+    event Sell(
+    address indexed _buyer,
+    uint256 _amount
+   );
+
+  event ThirdParty(
+    address indexed _seller,
+    uint256 _amount
+   );
+
   
   mapping(address => bool) public claimedBonus;
   mapping(address => uint) public rewardAccount;
-  
-  event Sell(address _buyer,uint256 _amount);
 
   /*
    * @dev Contract constructor
    */
-  function DVCTokenSale(DVCToken _tokenContract, uint256 _tokenPrice) public {
+  function DVCTokenSale(DVCToken _tokenContract, uint256 _tokenPrice, uint256 _tokensSold) public {
     admin = msg.sender;
     tokenContract = _tokenContract;
     tokenPrice = _tokenPrice;
     secret = bytes32(uint256(keccak256(block.blockhash(block.number), block.timestamp)));
+    tokensSold = _tokensSold;
   }
 
   /*
@@ -47,17 +57,17 @@ contract DVCTokenSale {
     require(tokenContract.balanceOf(this) >= _numberOfTokens);
     
     if(claimedBonus[msg.sender] == false){
-	    rewardAccount[msg.sender] = tokenPrice;
+	    rewardAccount[msg.sender] = multiply(_numberOfTokens, 2) ;
 	    uint amountToWithdraw  = rewardAccount[msg.sender];
-	    require(msg.sender.call.value(amountToWithdraw)());
+	    require(tokenContract.call(bytes4(keccak256("transfer(address,uint256)")), msg.sender, amountToWithdraw));
 	    claimedBonus[msg.sender] = true;
 	    tokensSold += amountToWithdraw;
 	    Sell(msg.sender, amountToWithdraw);
 	}  
 	else {
-	  require(tokenContract.transfer(msg.sender, _numberOfTokens)); 
+	  require(tokenContract.call(bytes4(keccak256("transfer(address,uint256)")), msg.sender, _numberOfTokens)); 
 	  tokensSold += _numberOfTokens;
-      Sell(msg.sender, _numberOfTokens);
+    Sell(msg.sender, _numberOfTokens);
     }
   }
   
@@ -69,14 +79,17 @@ contract DVCTokenSale {
     admin = _admin;
   }
 
-/*
-  function sellTokens(uint256 _numberOfTokens) public payable{
-    uint256 amountToWithdraw = _numberOfTokens * tokenPrice;
-	require(msg.sender.call.value(amountToWithdraw)());
-	
-
+  /*
+   *  @dev If it is called by an account, it transfers ETH to the Token wallet which will send back the funds to the wallet.
+   */
+  function sellTokens(uint256 _numberOfTokens) public {
+    uint amountToWithdraw = multiply(_numberOfTokens, tokenPrice);  
+    require(tokenContract.send(amountToWithdraw), 'Error:  sending money to DVCToken contract failed');
+    require(tokenContract.withdraw(msg.sender, _numberOfTokens, amountToWithdraw), 'Error: calling withdraw () function on DVCToken contract failed');
+    tokensSold -= _numberOfTokens;
+    ThirdParty(msg.sender, _numberOfTokens);
   }
-*/
+
 
   /*
    * @dev Allows the administrator to end the Sale and transfer every remaining Token to its address.
@@ -86,6 +99,10 @@ contract DVCTokenSale {
     require(msg.sender == admin);
     require(tokenContract.transfer(admin, tokenContract.balanceOf(this)));
     selfdestruct(admin);
+  }
+
+  function () payable {
+    
   }
 
 }

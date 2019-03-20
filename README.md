@@ -30,7 +30,7 @@ It has three main modules:
 - Attach a message to any transaction
 - Two-factor authentication
 - Profile management
-- Interact with smart contracts: Lottery & Donations
+- Interact with smart contracts: DVCToken & DVCTokenSale
 
 ## List of Vulnerabilities
 Vulnerabilities can be found in the Electron application, the web API or in the Ethereum smart contracts deployed to the local blockchain.

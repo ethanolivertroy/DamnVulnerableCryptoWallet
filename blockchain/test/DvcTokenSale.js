@@ -4,7 +4,7 @@ var DVCTokenSale = artifacts.require('./DVCTokenSale.sol');
 contract('DVCTokenSale', function(accounts) {
   var tokenInstance;
   var tokenSaleInstance;
-  var admin = accounts[0];
+  var admin = accounts[9];
   var buyer = accounts[1];
   var tokenPrice = 1000000000000000000; // in wei
   var tokensAvailable = 750000;
@@ -55,7 +55,7 @@ contract('DVCTokenSale', function(accounts) {
       // Try to buy tokens different from the ether value
       return tokenSaleInstance.buyTokens(numberOfTokens, { from: buyer, value: 1 });
     }).then(assert.fail).catch(function(error) {
-      assert(error.message.indexOf('revert') >= 0, 'msg.value must equal number of tokens in wei');
+      assert(error.metokenSaleInstancessage.indexOf('revert') >= 0, 'msg.value must equal number of tokens in wei');
       return tokenSaleInstance.buyTokens(800000, { from: buyer, value: numberOfTokens * tokenPrice })
     }).then(assert.fail).catch(function(error) {
       assert(error.message.indexOf('revert') >= 0, 'cannot purchase more tokens than available');

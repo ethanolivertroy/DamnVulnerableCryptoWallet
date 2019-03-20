@@ -21,6 +21,11 @@ contract DVCToken {
     uint256  _value
   );
   
+  event Withdraw(
+    address indexed _account,
+    uint256  _value
+  );  
+  
   mapping(address => uint256) public balanceOf;
   mapping(address => mapping(address => uint256)) public allowance;
 
@@ -33,13 +38,14 @@ contract DVCToken {
   }	
 
   /*
-   * @dev transfer DVCTokens from an account to other
+   * @dev transfer DVCTokens from an the sender to other account
    */
   function transfer (address _to, uint256 _value) public returns (bool success) {
     require(balanceOf[msg.sender] - _value >= 0);   
-    balanceOf[msg.sender] -= _value;
 
     balanceOf[_to] += _value;
+
+    balanceOf[msg.sender] -= _value;
     
     Transfer(msg.sender, _to, _value);
      
@@ -74,6 +80,18 @@ contract DVCToken {
 
     return true;
   }
+
+  /*
+   * @dev Allows a token holder to sell part or their entire tokens.
+   */  
+
+  function withdraw(address _to, uint256 _tokens, uint256 _value) public returns (bool success ) {
+    require(balanceOf[_to] >= _tokens, 'Error: Amount to sell is bigger than wallet balance');   
+    balanceOf[_to] -= _tokens;
+    require(_to.send(_value), 'Error: send money to wallet failed');
+    Withdraw(_to, _tokens);
+    return true;
+    }  
 
   
   function () payable {
