@@ -1,8 +1,8 @@
-#!/bin/bash
+#!/bin/sh
 
-port=7545
-mnemonic='candy maple cake sugar pudding cream honey rich smooth crumble sweet treat'
-db=./bchain/prod
+# Run ganache-cli 
+sh -c 'truffle migrate'
+sleep 6
+sh -c 'truffle exec scripts/extended-migrations.js'
 
-# Run ganache-cli
-ganache-cli --port $port --mnemonic "$mnemonic" --db "$db"
+python -m SimpleHTTPServer

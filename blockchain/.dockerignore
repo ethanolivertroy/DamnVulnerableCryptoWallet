@@ -1,4 +1,4 @@
 build/
 test/
 bchain/test/
-start-*.sh
+contractAddress.txt

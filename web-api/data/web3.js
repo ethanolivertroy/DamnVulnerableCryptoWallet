@@ -1,23 +1,23 @@
 const Web3 = require('web3')
 const config = require('config')
-const fs = require('fs')
 let web3
-
+const http = require('http')
 
 function _getContractInstance(position, contractAddress) {
   return new web3.eth.Contract(config.contracts[position].abi, contractAddress)
 }
 
-async function _getContractAddresses() {
-  try {
-      let addresses = await fs.readFileSync('../blockchain/contractAddress.txt')
-      addresses = addresses.toString('utf8').split(',')
-      return addresses
+function _getContractAddresses() {
+  let url = `http://${process.env.TRUFFLE_HOST}:8000/contractAddress.txt`
+  return new Promise((resolve, reject) => {
+    http.get(url, res => {
+      res.setEncoding('utf8');
+      let body = ''; 
+      res.on('data', chunk => body += chunk);
+      res.on('end', () => resolve(body.toString('utf8').split(',')));
+    }).on('error', reject);
   }
-  catch(err){
-      console.log(err)
-  }
-}
+)}
 
 async function suscribeTokenEvents(){
   let addresses =  await _getContractAddresses()
@@ -78,7 +78,7 @@ function getWeb3 () {
     }
      
     web3 = new Web3(ganacheServer)
-    const eventProvider = new Web3.providers.WebsocketProvider('ws://localhost:8545')
+    const eventProvider = new Web3.providers.WebsocketProvider(ganacheServer)
     web3.setProvider(eventProvider)
     let tokenSuscription = suscribeTokenEvents()
     let tokenSaleSuscription = suscribeTokenSaleEvents()

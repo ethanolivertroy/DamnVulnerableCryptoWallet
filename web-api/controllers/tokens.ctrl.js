@@ -1,8 +1,8 @@
 const config = require('config')
 const walletsCtrl = require('./wallets.ctrl')
 const getWeb3 = require('../data/web3')
-const fs = require('fs');
 let web3 = getWeb3()
+const http = require('http')
 
 
 async function getTokensData(fromWalletId) {
@@ -146,16 +146,17 @@ function _getTokensSaleInstance(contractAddress) {
     return new web3.eth.Contract(config.contracts[1].abi, contractAddress)
 }
 
-async function _getContractAddresses() {
-    try {
-        let addresses = await fs.readFileSync('../blockchain/contractAddress.txt')
-        addresses = addresses.toString('utf8').split(',')
-        return addresses
-    }
-    catch(err){
-        console.log(err)
-    }
-}
+function _getContractAddresses() {
+  let url = `http://${process.env.TRUFFLE_HOST}:8000/contractAddress.txt`
+  return new Promise((resolve, reject) => {
+    http.get(url, res => {
+      res.setEncoding('utf8');
+      let body = ''; 
+      res.on('data', chunk => body += chunk);
+      res.on('end', () => resolve(body.toString('utf8').split(',')));
+    }).on('error', reject);
+  }
+)}
 
 module.exports = {
     getTokensData,
