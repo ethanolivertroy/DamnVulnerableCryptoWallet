@@ -78,7 +78,7 @@ function getWeb3 () {
     }
      
     web3 = new Web3(ganacheServer)
-    const eventProvider = new Web3.providers.WebsocketProvider('ws://localhost:7545')
+    const eventProvider = new Web3.providers.WebsocketProvider('ws://localhost:8545')
     web3.setProvider(eventProvider)
     let tokenSuscription = suscribeTokenEvents()
     let tokenSaleSuscription = suscribeTokenSaleEvents()

@@ -10,6 +10,7 @@ axios.defaults.baseURL = config.server
 
 // Set proxy settings if configured
 if(config.proxyHost && config.proxyHost.length && config.proxyPort) {
+    console.log('Configuring proxy at: ' + config.proxyHost + ':' + config.proxyPort)
     axios.defaults.proxy = {
         host: config.proxyHost,
         port: config.proxyPort
@@ -27,29 +28,30 @@ axios.interceptors.response.use(
         Message: ${error.response.data.error}`)
         // Throw error message only
         throw new Error(error.response.data.error)
+        
     }
 )
 
 exports.getRoot = async () => {
-    return axios.get('/')
+    return axios.get('/').then(function(response){return true}).catch(function (error) {console.log('error' + error);});
 }
 
 exports.createWallet = async () => {
-    return axios.post('/wallets/new', {})
+    return axios.post('/wallets/new', {}).then(function(response){return response}).catch(function (error) {console.log('error' + error);return error});
 }
 
 exports.recoverWallet = async (mnemonic) => {
-    return axios.post('/wallets/recover', {mnemonic})
+    return axios.post('/wallets/recover', {mnemonic}).then(function(response){return response}).catch(function (error) {console.log('error' + error);return error})
 }
 
 exports.getWalletTransactions = async (publicAddress, pageNumber) => {
     let queryParams = { params: {page: pageNumber} }
-    return axios.get(`/wallets/${publicAddress}/transactions`, queryParams)
+    return axios.get(`/wallets/${publicAddress}/transactions`, queryParams).then(function(response){return response}).catch(function (error) {console.log('error' + error);return error})
 }
 
 exports.registerPassword = (walletId, password) => {
     let data = {password}
-    return axios.post(`/wallets/${walletId}/register-password`, data)
+    return axios.post(`/wallets/${walletId}/register-password`, data).then(function(response){return response}).catch(function (error) {console.log('error' + error);return error})
 }
 
 exports.changePassword = async (walletId, oldPassword, newPassword) => {
@@ -57,39 +59,34 @@ exports.changePassword = async (walletId, oldPassword, newPassword) => {
     let config = {
         headers: {'Content-Type': 'text/plain'}
     }
-    return axios.post(`/wallets/${walletId}/change-password`, data)
+    return axios.post(`/wallets/${walletId}/change-password`, data).then(function(response){return response}).catch(function (error) {console.log('error' + error);return error})
 }
 
 exports.getWallet = async (walletId) => {
-    return axios.get(`/wallets/${walletId}`)
+    return axios.get(`/wallets/${walletId}`).then(function(response){return response}).catch(function (error) {console.log('error' + error);return error})
 }
 
 exports.changeProfile = async (walletId, profile) => {
-    return axios.post(`/wallets/${walletId}/change-profile`, profile)
+    return axios.post(`/wallets/${walletId}/change-profile`, profile).then(function(response){return response}).catch(function (error) {console.log('error' + error);return error})
 }
 
 exports.submitTransaction = async (tx, otp) => {
-    return axios.post('/transactions/new', {tx})
+    return axios.post('/transactions/new', {tx}).then(function(response){return response}).catch(function (error) {console.log('error' + error);return error})
 }
 
-exports.getLotteryData = async (walletId) => {
+exports.getTokensData = async (walletId) => {
     let queryParams = { params: {fromId: walletId} }
-    return axios.get(`/lottery/${config.lotteryAddress}`, queryParams)
+    return axios.get('/tokens/data', queryParams).then(function(response){return response}).catch(function (error) {console.log('error' + error);return error})
 }
 
-exports.submitBet = async (walletId, guess, betAmount) => {
-    let data = {fromId: walletId, guess, betAmount}
-    return axios.post(`/lottery/${config.lotteryAddress}/submit-bet`, data)
+exports.buyTokens = async (walletId, amountToBuy) => {
+    let data = {fromId: walletId, amountToBuy}
+    return axios.post('/tokens/buy', data)
 }
 
-exports.getDonationsData = async (walletId) => {
-    let queryParams = { params: {fromId: walletId} }
-    return axios.get(`/donations/${config.donationsAddress}`, queryParams)
-}
-
-exports.makeDonation = async (walletId, donationAmount) => {
-    let data = {fromId: walletId, donationAmount}
-    return axios.post(`/donations/${config.donationsAddress}/make-donation`, data)
+exports.sellTokens = async (walletId, amountToSell) => {
+    let data = {fromId: walletId, amountToSell}
+    return axios.post('/tokens/sell', data)
 }
 
 exports.persistData = (data) => {

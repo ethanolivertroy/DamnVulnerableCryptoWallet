@@ -1,1 +1,1 @@
-{"server":"http://localhost:3000/","localdata":"localdata.json","debugPort":9334,"proxyHost":"","proxyPort":0,"lotteryAddress":"0x2fcea879fdc9fe5e90394faf0ca644a1749d0ad6","donationsAddress":"0x6da3f6cffb5dd0fbfbdcb1b681b189c9beb3b490"}
+{"server":"http://localhost:3000/","localdata":"localdata.json","debugPort":9334,"proxyHost":"","proxyPort":0}

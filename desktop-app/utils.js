@@ -12,8 +12,8 @@ const menuTemplate = require('./menu')
 exports.isServerOnline = () => {
     return services
         .getRoot()
-        .then(response => {return true})
-        .catch(error => {return false})
+        .then(function (response){return true})
+        .catch(function (error) { return false})
 }
 
 /**

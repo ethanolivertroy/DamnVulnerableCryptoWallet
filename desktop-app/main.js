@@ -20,7 +20,7 @@ app.commandLine.appendSwitch('remote-debugging-port', config.debugPort)
  */
 async function initApp() {
     if(await utils.isServerOnline()) {
-        try {            
+        try {
             let data = await services.readLocalData()
             localdata = JSON.parse(data)
         } catch(err) {
@@ -32,7 +32,7 @@ async function initApp() {
             } catch(error) {
                 log.error(error)
             }
-        } finally {            
+        } finally {
             if(utils.isPasswordSet(localdata.wallet)) {
                 winManager.createLoginWindow()
             } else {
@@ -78,27 +78,72 @@ async function handleSettingsDataRequest(event) {
     }
 }
 
-async function handleLotteryDataRequest(event) {
+async function handleTokensDataRequest(event) {
     try {
-        // Get lottery's last result and current jackpot
-        let response = await services.getLotteryData(localdata.wallet.walletId)
-        // Copy lottery contract address
-        response.data.address = config.lotteryAddress
-        event.sender.send('lottery-data-push', response.data)
+        // Get user's related info on DVCToken & DVCTokenSale
+        let response = await services.getTokensData(localdata.wallet.walletId)
+
+        event.sender.send('tokens-data-push', response.data)
     } catch(error) {
         utils.sendError(event.sender, error)
     }
 }
 
-async function handleDonationsDataRequest(event) {
-    try {
-        let response = await services.getDonationsData(localdata.wallet.walletId)
-        response.data.address = config.donationsAddress
-        event.sender.send('donations-data-push', response.data)
-    } catch(error) {
-        utils.sendError(event.sender, error)
+async function handleBuyTokens(event, buyAmount) {
+    if(hasEnoughFunds(buyAmount)) {
+        let buyTokensResponse = await services.buyTokens(localdata.wallet.walletId, buyAmount)
+        log.warn(
+            `New purchase of ${buyAmount} ETH made .`,
+            `Transaction hash: ${buyTokensResponse.data.transactionHash}`
+        )
+        // Update wallet balance and notify main window
+        localdata.wallet.balance -= buyAmount
+        services.persistData(localdata)
+        utils.sendParent(event.sender, 'update-wallet-balance', localdata.wallet.balance)
+
+        event.sender.send('new-tokens-response')
+
+        // Get new tokens balance
+        let response = await services.getTokensData(localdata.wallet.walletId)
+        
+        //We refresh the token renderer
+        event.sender.send('tokens-data-push', response.data)
+
+        //We refresh the main renderer
+        utils.sendParent(event.sender, 'tokens-data-push', response.data)
+    } else {
+        utils.sendError(event.sender, new Error('The amount to spend is greater than your account balance'))
     }
 }
+
+async function handleSellTokens(event, sellAmount) {
+        let sellTokensResponse = await services.sellTokens(localdata.wallet.walletId, sellAmount)
+        log.warn(
+            `New transaction of ${sellAmount} ETH made .`,
+            `Transaction hash: ${sellTokensResponse.data.transactionHash}`
+        )
+
+        // Update wallet balance and notify main window
+        //let walletResponse = await services.getWalletTransactions(localdata.wallet.publicAddress, 1)
+        //localdata.wallet.balance = walletResponse.data.balance
+    
+        localdata.wallet.balance += parseInt(sellAmount)
+
+        services.persistData(localdata)
+        utils.sendParent(event.sender, 'update-wallet-balance', localdata.wallet.balance)
+
+        event.sender.send('new-tokens-response')
+
+        // Get new tokens balance
+        let response = await services.getTokensData(localdata.wallet.walletId)
+        
+        //We refresh the token renderer
+        event.sender.send('tokens-data-push', response.data)
+
+        //We refresh the main renderer
+        utils.sendParent(event.sender, 'tokens-data-push', response.data)
+}
+
 
 async function handleRecoverWalletRequest(event, mnemonic) {
     try {
@@ -212,74 +257,20 @@ function handleLoginRequest(event, password) {
     }
 }
 
-async function handleNewBetRequest(event, bet, guess) {
-    if(hasEnoughFunds(bet)) {
-        try {
-            // Submit bet. In response.data we have tx data and a flag that says if the user won:
-            // { result: { tx: {}, winner: bool } }
-            let betResponse = await services.submitBet(localdata.wallet.walletId, guess, bet)
-            log.warn(
-                `New bet submitted to Lottery at ${config.lotteryAddress}.`,
-                `Transaction hash: ${betResponse.data.result.tx.transactionHash}.`,
-                `Winner: ${betResponse.data.result.winner ? 'yes' : 'no'}`
-            )
-
-            // Update wallet balance and notifiy main window
-            localdata.wallet.balance -= bet
-            services.persistData(localdata)
-            utils.sendParent(event.sender, 'update-wallet-balance', localdata.wallet.balance)
-            
-            event.sender.send('new-bet-response', betResponse.data.result)
-
-            // Get lottery data (jackpot and last number)
-            let lotteryDataResponse = await services.getLotteryData(localdata.wallet.walletId)
-            event.sender.send('lottery-data-push', lotteryDataResponse.data)
-        } catch (error) {            
-            utils.sendError(event.sender, error)
-        }
-    } else {
-        utils.sendError(event.sender, new Error('The bet amount is greater than your account balance'))
-    }
-}
-
-async function handleNewDonationRequest(event, donationAmount) {
-    if(hasEnoughFunds(donationAmount)) {
-        let donationResponse = await services.makeDonation(localdata.wallet.walletId, donationAmount)
-        log.warn(
-            `New donation of ${donationAmount} ETH made to the Donations contract at ${config.donationsAddress}.`,
-            `Transaction hash: ${donationResponse.data.transactionHash}`
-        )
-        // Update wallet balance and notify main window
-        localdata.wallet.balance -= donationAmount
-        services.persistData(localdata)
-        utils.sendParent(event.sender, 'update-wallet-balance', localdata.wallet.balance)
-
-        event.sender.send('new-donation-response')
-
-        // Get donations data
-        let response = await services.getDonationsData(localdata.wallet.walletId)
-        event.sender.send('donations-data-push', response.data)
-    } else {
-        utils.sendError(event.sender, new Error('The donation amount is greater than your account balance'))
-    }
-}
-
-async function handleReclaimJackpotRequest(event) {
-    // Get wallet balance from the server and save it
-    let response = await services.getWallet(localdata.wallet.walletId)
-    localdata.wallet.balance = response.data.balance
-    services.persistData(localdata)
-    // Notify the parent window (main) and close lottery window
-    utils.sendParent(event.sender, 'update-wallet-balance', response.data.balance)
-    winManager.closeWindow(event.sender.webContents)
-}
-
-function handleOtpSubmission(event, otp) {
+function handleOtpSubmission(event, otp, action) {
     if(utils.validateOtp(otp, localdata.wallet.twoFactorAuthKey)) {
         // Close 2FA window
         winManager.closeWindow(event.sender.webContents)
+
+        if(action == null ){
+            action = ''
+        }
+        //We set up new IPC event with action
+        ipcEvent = 'valid-otp' + action
+
+        console.log(ipcEvent)
         // Notify parent window
-        utils.sendParent(event.sender, 'valid-otp')
+        utils.sendParent(event.sender, ipcEvent)
     } else {
         utils.sendError(event.sender, new Error('Invalid OTP. Try again please.'))
     }
@@ -330,16 +321,17 @@ ipcMain.on('open-settings-request', event => {
     winManager.createSettingsWindow()
 })
 
-ipcMain.on('open-lottery-request', event => {
-    winManager.createLotteryWindow()
+
+ipcMain.on('open-tokens-request', event => {
+    winManager.createTokensWindow()
 })
 
-ipcMain.on('open-donations-request', event => {
-    winManager.createDonationsWindow()
-})
 
-ipcMain.on('open-twofactorauth-request', event => {
-    winManager.createTwoFactorAuthWindow()
+ipcMain.on('open-twofactorauth-request', (event, otpAction) => {
+    let window = winManager.createTwoFactorAuthWindow()
+    window.webContents.on('did-finish-load', () => {
+        window.webContents.send('change-otp-action', otpAction)
+    })
 })
 
 ipcMain.on('tx-data-pull', handleTransactionsDataRequest)
@@ -358,9 +350,9 @@ ipcMain.on('register-request', handleRegisterRequest)
 
 ipcMain.on('settings-data-pull', handleSettingsDataRequest)
 
-ipcMain.on('donations-data-pull', handleDonationsDataRequest)
+ipcMain.on('new-buy-request', handleBuyTokens)
 
-ipcMain.on('new-donation-request', handleNewDonationRequest)
+ipcMain.on('new-sell-request', handleSellTokens)
 
 ipcMain.on('change-password-settings-request', handleChangePasswordRequest)
 
@@ -375,11 +367,7 @@ ipcMain.on('get-mnemonic-request', event => {
 
 ipcMain.on('recover-wallet-request', handleRecoverWalletRequest)
 
-ipcMain.on('new-bet-request', handleNewBetRequest)
-
-ipcMain.on('lottery-data-pull', handleLotteryDataRequest)
-
-ipcMain.on('reclaim-jackpot-request', handleReclaimJackpotRequest)
+ipcMain.on('tokens-data-pull', handleTokensDataRequest)
 
 ipcMain.on('otp-submission', handleOtpSubmission)
 

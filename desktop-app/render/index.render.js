@@ -11,6 +11,7 @@ vm = new Vue({
         wallet: {},
         transactions: [],
         tx: {},
+        tokens: {},
         error: '',
         currentPage: 1,
         next: false,
@@ -39,11 +40,8 @@ vm = new Vue({
         openSettings: () => {
             ipcRenderer.send('open-settings-request')
         },
-        openLottery: () => {
-            ipcRenderer.send('open-lottery-request')
-        },
-        openDonations: () => {
-            ipcRenderer.send('open-donations-request')
+        openTokens: () => {
+            ipcRenderer.send('open-tokens-request')
         },
         openModal: (id) => {
             $('#modal-' + id).modal({})
@@ -61,7 +59,17 @@ vm = new Vue({
 })
 
 ipcRenderer.send('tx-data-pull', vm.currentPage)
+
 document.getElementById('toAddr').focus()
+
+ipcRenderer.send('tokens-data-pull')
+
+ipcRenderer.on('tokens-data-push', (event, tokenObject) => {
+    // Update token object
+    vm.tokens = tokenObject
+});
+
+
 
 ipcRenderer.on('tx-data-push', (event, wallet, transactions, next, tx) => {
     // Update wallet balance
@@ -95,6 +103,10 @@ ipcRenderer.on('change-page-response', (event, data) => {
 
 ipcRenderer.on('update-wallet-balance', (event, balance) => {
     vm.wallet.balance = balance
+})
+
+ipcRenderer.on('update-tokens-balance', (event, balance) => {
+    vm.tokens.balance = balance
 })
 
 ipcRenderer.on('valid-otp', (event) => {

@@ -12,18 +12,13 @@
         <nav class="grey darken-3" role="navigation">
             <div class="nav-wrapper container-fluid">
                 <a class="brand-logo left light">&nbsp;{{wallet.balance}} ETH</a>
+                <a class="brand-logo left light" style="right: 190px" >&nbsp;{{tokens.balance}} DVC</a>
                 <a class="brand-logo center">DVCW</a>
                 <ul class="right">
                     <li>
-                        <!-- Donations -->
-                        <a @click="openDonations" class="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Donate">
-                            <i class="material-icons">favorite_border</i>
-                        </a>
-                    </li>
-                    <li>
-                        <!-- Lottery -->
-                        <a @click="openLottery" class="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Lottery">
-                            <i class="material-icons">casino</i>
+                        <!-- Tokens -->
+                        <a @click="openTokens" class="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Buy & Sale Tokens">
+                            <i class="material-icons">attach_money</i>
                         </a>
                     </li>
                     <li>

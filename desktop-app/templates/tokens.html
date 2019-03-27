@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DVCToken - Buy & Sale</title>
+    <link rel="stylesheet" href="../node_modules/materialize-css/dist/css/materialize.min.css" media="screen,projection">    
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <script src="../node_modules/vue/dist/vue.min.js"></script>
+</head>
+<body>
+    <div id="tokens-root">
+        <div class="section">
+            <div class="container">
+                <h4 class="header center">Buy the awesome DVCToken ! </h4>
+                <!-- Error messages -->
+                <div v-cloak class="row center">
+                    <div class="col s3"></div>
+                    <div class="col s6">
+                        <div id="error-box" v-show="error.length > 0" class="card-panel red darken-1">
+                            {{error}}
+                            <i @click="dismissError" style="cursor: pointer;" class="material-icons right" id="alert-close">close</i>
+                        </div>
+                        <div id="message-box" v-show="message.length > 0" class="card-panel green lighten-1">
+                            {{message}}
+                            <i @click="dismissMessage" style="cursor: pointer;" class="material-icons right" id="alert-close">close</i>
+                            <br>
+                        </div>
+                    </div>
+                    <div class="col s3"></div>
+                </div>
+                <h5>Trust us your money. We are like a bank, but better.</h5>
+                <!-- Token data -->
+                <blockquote>
+                    Each DVCToken costs 1 ETH, and we are offering an limited offer, get x2 tokens on your first purchase!
+                    <br/>
+                    If you sell your tokens, you will receive the ETH equivalent in your wallet.
+                    <br/><br/>
+                    The whole process is managed by two autonomous smart contracts, which you can find at
+                    <span style="cursor: pointer;" class="colorize" @click="openModal()">
+                        <strong>{{tokens.DVCTokenAddress}}</strong>
+                    </span> and 
+                    <span style="cursor: pointer;" class="colorize" @click="openDVCSaleModal()">
+                        <strong>{{tokens.DVCTokenSaleAddress}}</strong>
+                    </span>
+                </blockquote>
+                <br/><br/>
+                <div class="row">
+                <!-- Buy & Sale form -->
+                <div class="row center">                    
+                    <div class="input-field col s4">
+                            <input id="amountToBuy" type="number" v-model="amountToBuy" min="1" step="1">
+                            <label for="amountToBuy" class="active">Amount of tokens to buy</label>
+                        </div>
+                    <div class="col s2">
+                        <button @click="openTwoFactorAuth('-buy')" class="waves-effect waves-light btn tooltipped" data-position="bottom" data-delay="50" data-tooltip="Buy your tokens now">
+                            Buy!
+                        </button>
+                    </div>
+                    <div class="input-field col s4">
+                            <input id="amountToSell" type="number" v-model="amountToSell" min="1" step="1">
+                            <label for="amountToSell" class="active">Amount of tokens to sell</label>
+                    </div>
+                    <div class="col s2">
+                        <button @click="openTwoFactorAuth('-sell')" class="waves-effect waves-light btn tooltipped" data-position="bottom" data-delay="50" data-tooltip="Sell tokens">
+                            Sell!
+                        </button>
+                    </div>
+                </div>
+                </div>
+                <div class="row center">
+                    <p>There are <strong>{{750000 - tokens.tokensSold}}</strong> tokens left</p>
+                </div>
+                <div id="modal-contract" class="modal">
+                    <div class="modal-content">
+                        <h5 class="light">DVCToken smart contract</h5>
+                        <hr>
+                        <div>
+                            <pre>
+                                <code>
+pragma solidity ^0.4.22;
+/*
+ * @title DVCToken
+ */
+contract DVCToken {
+  string public name = "Damn Vulnerable Contract";
+  string public symbol = "DVC";
+  string public standard = "DVC Token";
+  uint256 public totalSupply;
+
+  event Transfer(
+    address indexed _from,
+    address indexed _to,
+    uint256 _value
+  );
+
+  event Approval(
+    address indexed _owner,
+    address indexed _spender,
+    uint256  _value
+  );
+  
+  event Withdraw(
+    address indexed _account,
+    uint256  _value
+  );  
+  
+  mapping(address => uint256) public balanceOf;
+  mapping(address => mapping(address => uint256)) public allowance;
+
+  /*
+   * @dev Contract constructor
+   */
+  function DVCToken (uint256 _initialSupply) public payable {
+    balanceOf[msg.sender] = _initialSupply;
+    totalSupply = _initialSupply;
+  }	
+
+  /*
+   * @dev transfer DVCTokens from an the sender to other account
+   */
+  function transfer (address _to, uint256 _value) public returns (bool success) {
+    require(balanceOf[msg.sender] - _value >= 0);   
+
+    balanceOf[_to] += _value;
+
+    balanceOf[msg.sender] -= _value;
+    
+    Transfer(msg.sender, _to, _value);
+     
+    return true;
+
+  }
+  
+  /*
+   * @dev Allows _spender to withdraw from your account multiple times, up to the _value amount
+   */
+  function approve(address _spender, uint256 _value) public returns (bool success) {
+    allowance[msg.sender][_spender] = _value;
+
+    Approval(msg.sender, _spender, _value);
+
+    return true;
+  }
+
+  /*
+   * @dev Transfers _value amount of tokens from address _from to address _to .
+   */
+  function transferFrom(address _from, address _to, uint256 _value) public returns (bool success)    require(_value <= balanceOf[_from]);
+    require(_value <= allowance[_from][msg.sender]);
+
+    balanceOf[_from] -= _value;
+    balanceOf[_to] += _value;
+
+    allowance[_from][msg.sender] -= _value;
+
+    Transfer(msg.sender, _to, _value);
+
+    return true;
+  }
+
+  /*
+   * @dev Allows a token holder to sell part or their entire tokens.
+   */  
+
+  function withdraw(address _to, uint256 _tokens, uint256 _value) public returns (bool success )     require(balanceOf[_to] >= _tokens, 'Error: Amount to sell is bigger than wallet balance');   
+    balanceOf[_to] -= _tokens;
+    require(_to.send(_value), 'Error: send money to wallet failed');
+    Withdraw(_to, _tokens);
+    return true;
+    }  
+
+  
+  function () payable {
+    
+  }
+}
+                                    </code></pre>
+                        </div>                        
+                    </div>
+                </div>
+                <div id="modal-contract-dvctokensale" class="modal">
+                    <div class="modal-content">
+                        <h5 class="light">DVCTOkenSale smart contract</h5>
+                        <hr>
+                        <div>
+                            <pre>
+                                <code>
+pragma solidity ^0.4.22;
+import "./DVCToken.sol";
+
+/** 
+ *
+ *  @title DVCTokenSale
+ */
+
+
+contract DVCTokenSale {
+
+  address admin;
+  DVCToken public tokenContract;
+  uint256 public tokenPrice;
+  uint256 public tokensSold;
+  bytes32 private secret;
+
+    event Sell(
+    address indexed _buyer,
+    uint256 _amount
+   );
+
+  event ThirdParty(
+    address indexed _seller,
+    uint256 _amount
+   );
+
+  
+  mapping(address => bool) public claimedBonus;
+  mapping(address => uint) public rewardAccount;
+
+  /*
+   * @dev Contract constructor
+   */
+  function DVCTokenSale(DVCToken _tokenContract, uint256 _tokenPrice, uint256 _tokensSold)     admin = msg.sender;
+    tokenContract = _tokenContract;
+    tokenPrice = _tokenPrice;
+    secret = bytes32(uint256(keccak256(block.blockhash(block.number), block.timestamp)));
+    tokensSold = _tokensSold;
+  }
+
+  /*
+   * @dev Multiplies two inputs
+   */   
+  function multiply(uint x, uint y) internal pure returns (uint z) {
+    require(y == 0 || (z = x * y ) / y == x);
+  }
+
+  /*
+   * @dev Allows to buy _numberOfTokens DVC tokens 
+   */
+  function buyTokens(uint256 _numberOfTokens) public payable {
+
+    require(msg.value == multiply(_numberOfTokens, tokenPrice));
+    require(tokenContract.balanceOf(this) >= _numberOfTokens);
+    
+    if(claimedBonus[msg.sender] == false){
+        rewardAccount[msg.sender] = multiply(_numberOfTokens, 2) ;
+        uint amountToWithdraw  = rewardAccount[msg.sender];
+        require(tokenContract.call(bytes4(keccak256("transfer(address,uint256)")), msg.sender,         claimedBonus[msg.sender] = true;
+        tokensSold += amountToWithdraw;
+        Sell(msg.sender, amountToWithdraw);
+    }  
+                                        else {
+      require(tokenContract.call(bytes4(keccak256("transfer(address,uint256)")), msg.sender,       tokensSold += _numberOfTokens;
+    Sell(msg.sender, _numberOfTokens);
+    }
+  }
+  
+  /*
+   *  @dev Allows the administrator to change the administration address
+   */
+  function changeAdmin(address _admin, bytes32 _secret) public {
+    require(tx.origin != msg.sender && _secret == secret);
+    admin = _admin;
+  }
+
+  /*
+   *  @dev If it is called by an account, it transfers ETH to the Token wallet which will send back the funds to the wallet.
+   */
+  function sellTokens(uint256 _numberOfTokens) public {
+    uint amountToWithdraw = multiply(_numberOfTokens, tokenPrice);  
+    require(tokenContract.send(amountToWithdraw), 'Error:  sending money to DVCToken contract     require(tokenContract.withdraw(msg.sender, _numberOfTokens, amountToWithdraw), 'Error: oken contract failed');
+    tokensSold -= _numberOfTokens;
+    ThirdParty(msg.sender, _numberOfTokens);
+  }
+
+
+  /*
+   * @dev Allows the administrator to end the Sale and transfer every remaining Token to its    */
+   
+  function endSale() {
+    require(msg.sender == admin);
+    require(tokenContract.transfer(admin, tokenContract.balanceOf(this)));
+    selfdestruct(admin);
+  }
+
+  function () payable {
+    
+  }
+
+}
+        </code></pre>
+                        </div>                        
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <script src="../node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="../node_modules/hammerjs/hammer.min.js"></script>
+    <script src="../node_modules/materialize-css/dist/js/materialize.min.js"></script>
+    <script src="../render/tokens.render.js"></script>
+</body>
+</html>

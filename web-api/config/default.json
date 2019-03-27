@@ -2,7 +2,7 @@
     "secureKey": "ZEdoMVoyeHBabVU9",
     "database": "./data/dvcw.db",
     "port": 3000,
-    "ganacheServer": "http://localhost:7545",
+    "ganacheServer": "http://localhost:8545",
     "defaultMnemonic": "candy maple cake sugar pudding cream honey rich smooth crumble sweet treat",
     "walletIndex": 0,
     "derivationPath": "m/44'/60'/0'/0",
