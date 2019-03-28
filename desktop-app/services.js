@@ -37,21 +37,21 @@ exports.getRoot = async () => {
 }
 
 exports.createWallet = async () => {
-    return axios.post('/wallets/new', {}).then(function(response){return response}).catch(function (error) {console.log('error' + error);return error});
+    return axios.post('/wallets/new', {})
 }
 
 exports.recoverWallet = async (mnemonic) => {
-    return axios.post('/wallets/recover', {mnemonic}).then(function(response){return response}).catch(function (error) {console.log('error' + error);return error})
+    return axios.post('/wallets/recover', {mnemonic})
 }
 
 exports.getWalletTransactions = async (publicAddress, pageNumber) => {
     let queryParams = { params: {page: pageNumber} }
-    return axios.get(`/wallets/${publicAddress}/transactions`, queryParams).then(function(response){return response}).catch(function (error) {console.log('error' + error);return error})
+    return axios.get(`/wallets/${publicAddress}/transactions`, queryParams)
 }
 
 exports.registerPassword = (walletId, password) => {
     let data = {password}
-    return axios.post(`/wallets/${walletId}/register-password`, data).then(function(response){return response}).catch(function (error) {console.log('error' + error);return error})
+    return axios.post(`/wallets/${walletId}/register-password`, data)
 }
 
 exports.changePassword = async (walletId, oldPassword, newPassword) => {
@@ -59,24 +59,24 @@ exports.changePassword = async (walletId, oldPassword, newPassword) => {
     let config = {
         headers: {'Content-Type': 'text/plain'}
     }
-    return axios.post(`/wallets/${walletId}/change-password`, data).then(function(response){return response}).catch(function (error) {console.log('error' + error);return error})
+    return axios.post(`/wallets/${walletId}/change-password`, data)
 }
 
 exports.getWallet = async (walletId) => {
-    return axios.get(`/wallets/${walletId}`).then(function(response){return response}).catch(function (error) {console.log('error' + error);return error})
+    return axios.get(`/wallets/${walletId}`)
 }
 
 exports.changeProfile = async (walletId, profile) => {
-    return axios.post(`/wallets/${walletId}/change-profile`, profile).then(function(response){return response}).catch(function (error) {console.log('error' + error);return error})
+    return axios.post(`/wallets/${walletId}/change-profile`, profile)
 }
 
 exports.submitTransaction = async (tx, otp) => {
-    return axios.post('/transactions/new', {tx}).then(function(response){return response}).catch(function (error) {console.log('error' + error);return error})
+    return axios.post('/transactions/new', {tx})
 }
 
 exports.getTokensData = async (walletId) => {
     let queryParams = { params: {fromId: walletId} }
-    return axios.get('/tokens/data', queryParams).then(function(response){return response}).catch(function (error) {console.log('error' + error);return error})
+    return axios.get('/tokens/data', queryParams)
 }
 
 exports.buyTokens = async (walletId, amountToBuy) => {

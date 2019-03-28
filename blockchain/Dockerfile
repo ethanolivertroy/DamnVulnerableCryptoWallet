@@ -5,4 +5,3 @@ RUN yarn global add truffle@4.1.15
 ENV GANACHE_HOST=ganache GANACHE_PORT=8545
 RUN apt install python
 EXPOSE 8000
-CMD ["truffle", "migrate"]
