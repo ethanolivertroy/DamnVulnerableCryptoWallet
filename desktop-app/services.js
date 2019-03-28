@@ -33,7 +33,7 @@ axios.interceptors.response.use(
 )
 
 exports.getRoot = async () => {
-    return axios.get('/').then(function(response){return true}).catch(function (error) {console.log('error' + error);});
+    return axios.get('/')
 }
 
 exports.createWallet = async () => {
