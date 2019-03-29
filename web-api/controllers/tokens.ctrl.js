@@ -1,8 +1,9 @@
 const config = require('config')
 const walletsCtrl = require('./wallets.ctrl')
 const getWeb3 = require('../data/web3')
-let web3 = getWeb3()
+const fs = require('fs');
 const http = require('http')
+let web3 = getWeb3()
 
 
 async function getTokensData(fromWalletId) {
@@ -12,37 +13,27 @@ async function getTokensData(fromWalletId) {
     if(web3.utils.isAddress(walletAddress)) {
         
         let addresses = await _getContractAddresses();
+        let DVCTokenAddress = addresses[0]
+        let DVCTokenSaleAddress = addresses[1]
         let tokenInstance = await _getTokensInstance(addresses[0])
         let tokenSaleInstance = await _getTokensSaleInstance(addresses[1])
         let balance = await tokenInstance.methods.balanceOf(walletAddress).call()
         let tokenPrice = await tokenSaleInstance.methods.tokenPrice().call()
         let tokensSold = await tokenSaleInstance.methods.tokensSold().call()
         let tokenSaleBalanceinWei = await web3.eth.getBalance(addresses[1])
-        let tokenBalanceinWei = await web3.eth.getBalance(addresses[0])
         let userBalanceinWei = await web3.eth.getBalance(walletAddress)
         let tokenSaleBalance = await tokenInstance.methods.balanceOf(addresses[1]).call()
-        let tokenBalance = await tokenInstance.methods.balanceOf(addresses[0]).call()
 
-        let suscription = await tokenInstance.events.Transfer({}, (error, data) => {
-            if(error){
-                console.log("Error: " + error)
-            }
-            else {
-                console.dir("Data: " + JSON.stringify(data))
-            }
-        });
-        //console.log(transferEvent)
-        //let transferWatch = await transferEvent.watch(function (error, result) {if (error) {console.log(error)} else {console.log(result)}})
         
         return { 
             balance,
             tokenPrice,
             tokensSold,
             tokenSaleBalanceinWei,
-            tokenBalanceinWei,
-            tokenBalance,
             tokenSaleBalance,
             userBalanceinWei,
+            DVCTokenAddress,
+            DVCTokenSaleAddress
         }
 
 
@@ -62,9 +53,8 @@ async function buyTokens(amountToBuy, fromWalletId) {
         let tokenSaleInstance = await _getTokensSaleInstance(addresses[1])
         let encodedABI = tokenSaleInstance.methods.buyTokens(amountToBuy).encodeABI()
         let value = web3.utils.toWei(`${amountToBuy}`.replace(',', '.'), 'ether')
-        console.log(value)
+
         let holderBalance = await web3.eth.getBalance(wallet.publicAddress)
-        console.log(holderBalance)
         try {
             let tx = {
                 from: walletAdress,
@@ -147,17 +137,16 @@ function _getTokensSaleInstance(contractAddress) {
 }
 
 function _getContractAddresses() {
-  let url = `http://${process.env.TRUFFLE_HOST}:8000/contractAddress.txt`
-  return new Promise((resolve, reject) => {
-    http.get(url, res => {
-      res.setEncoding('utf8');
-      let body = ''; 
-      res.on('data', chunk => body += chunk);
-      res.on('end', () => resolve(body.toString('utf8').split(',')));
-    }).on('error', reject);
-  }
-)}
-
+    return new Promise((resolve, reject) => {
+      http.get(`http://${process.env.TRUFFLE_HOST}:8000/contractAddress.txt`, res => {
+        res.setEncoding('utf8');
+        let body = ''; 
+        res.on('data', chunk => body += chunk);
+        res.on('end', () => resolve(body.toString('utf8').split(',')));
+      }).on('error', reject);
+    }
+  )}
+  
 module.exports = {
     getTokensData,
     sellTokens,
