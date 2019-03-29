@@ -12,6 +12,7 @@ It has three main modules:
 2. Clone this repository
 3. In the root folder, run `make install` to deploy all backend services
 4. Download the [desktop app latest release](https://gitlab.com/badbounty/dvcw/tags/) and launch it
+wever, bear in mind that many patterns and practices used are totally custom, deprecated and highly insecure, so you should NEVER use this project's code as a template to build your Ethereum wallet, web API or Electron app.
 
 ### Other useful commands
 #### Stop & resume backend
@@ -30,7 +31,11 @@ It has three main modules:
 - Attach a message to any transaction
 - Two-factor authentication
 - Profile management
-- Interact with smart contracts: DVCToken & DVCTokenSale
+- Interact with smart contracts: DVCToken & DVCTokenSale and exploit the following vulnerabilities:
+    - Inadequate access control
+    - Overflows and Underflows
+    - Bad Randomness
+    - Reentrancy
 
 ## List of Vulnerabilities
 Vulnerabilities can be found in the Electron application, the web API or in the Ethereum smart contracts deployed to the local blockchain.
