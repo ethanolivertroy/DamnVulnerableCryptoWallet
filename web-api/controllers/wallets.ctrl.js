@@ -78,7 +78,7 @@ function changeWalletPassword(walletId, oldPassword, newPassword) {
     if(validateWalletId(walletId) && _validatePassword(newPassword)) {
         try {
             let currentPassword = db.getWalletPassword(walletId)
-            if(!!currentPassword && currentPassword.length > 0 && oldPassword === currentPassword) {                
+            if(!!currentPassword && currentPassword.length > 0 && oldPassword === currentPassword && currentPassword != newPassword ) {                
                 db.registerWalletPassword(walletId, newPassword)
                 return {message: 'Password successfully changed'}
             } else {
