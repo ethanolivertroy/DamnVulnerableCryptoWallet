@@ -90,49 +90,55 @@ async function handleTokensDataRequest(event) {
 }
 
 async function handleBuyTokens(event, buyAmount) {
-    if(hasEnoughFunds(buyAmount)) {
-        let buyTokensResponse = await services.buyTokens(localdata.wallet.walletId, buyAmount)
-        log.warn(
-            `New purchase of ${buyAmount} ETH made .`,
-            `Transaction hash: ${buyTokensResponse.data.transactionHash}`
-        )
-        // Update wallet balance and notify main window
-        localdata.wallet.balance -= buyAmount
-        services.persistData(localdata)
-        utils.sendParent(event.sender, 'update-wallet-balance', localdata.wallet.balance)
+    try {
+        if(hasEnoughFunds(buyAmount)) {
+            let buyTokensResponse = await services.buyTokens(localdata.wallet.walletId, buyAmount)
+            log.warn(
+                `New purchase of ${buyAmount} ETH made .`,
+                `Transaction hash: ${buyTokensResponse.data.transactionHash}`
+            )
+            // Update wallet balance and notify main window
+            localdata.wallet.balance -= buyAmount
+            services.persistData(localdata)
+            utils.sendParent(event.sender, 'update-wallet-balance', localdata.wallet.balance)
 
-        event.sender.send('new-tokens-response')
+            console.log('in main: ' + buyTokensResponse.data.logs[0].topics[0])
 
-        // Get new tokens balance
-        let response = await services.getTokensData(localdata.wallet.walletId)
-        
-        //We refresh the token renderer
-        event.sender.send('tokens-data-push', response.data)
+            event.sender.send('new-tokens-response', buyTokensResponse)
 
-        //We refresh the main renderer
-        utils.sendParent(event.sender, 'tokens-data-push', response.data)
-    } else {
-        utils.sendError(event.sender, new Error('The amount to spend is greater than your account balance'))
+            // Get new tokens balance
+            let response = await services.getTokensData(localdata.wallet.walletId)
+            
+            //We refresh the token renderer
+            event.sender.send('tokens-data-push', response.data)
+
+            //We refresh the main renderer
+            utils.sendParent(event.sender, 'tokens-data-push', response.data)
+        } else {
+            utils.sendError(event.sender, new Error('The amount to spend is greater than your account balance'))
+        }
+    } catch(error) {
+        utils.sendError(event.sender, error)
     }
+
 }
 
 async function handleSellTokens(event, sellAmount) {
+    try {
         let sellTokensResponse = await services.sellTokens(localdata.wallet.walletId, sellAmount)
         log.warn(
             `New transaction of ${sellAmount} ETH made .`,
             `Transaction hash: ${sellTokensResponse.data.transactionHash}`
         )
 
-        // Update wallet balance and notify main window
-        //let walletResponse = await services.getWalletTransactions(localdata.wallet.publicAddress, 1)
-        //localdata.wallet.balance = walletResponse.data.balance
+        console.log("sell: " + sellTokensResponse.data.logs[0].topics[0])
     
         localdata.wallet.balance += parseInt(sellAmount)
 
         services.persistData(localdata)
         utils.sendParent(event.sender, 'update-wallet-balance', localdata.wallet.balance)
 
-        event.sender.send('new-tokens-response')
+        event.sender.send('new-tokens-response', sellTokensResponse)
 
         // Get new tokens balance
         let response = await services.getTokensData(localdata.wallet.walletId)
@@ -142,6 +148,9 @@ async function handleSellTokens(event, sellAmount) {
 
         //We refresh the main renderer
         utils.sendParent(event.sender, 'tokens-data-push', response.data)
+    } catch(error) {
+        utils.sendError(event.sender, error)
+    }
 }
 
 

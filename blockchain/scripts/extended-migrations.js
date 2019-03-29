@@ -55,7 +55,7 @@ async function execute(callback){
     console.log("[X] We transfer an additional ETH so it allows to withdraw also the gifted tokens")
 
 
-    let transaction = await web3.eth.sendTransaction({from: account,to: DVCTokenSaleAddress,value: 40000000000000000000})
+    let transaction = await web3.eth.sendTransaction({from: account,to: DVCTokenSaleAddress,value: 99000000000000000000})
     console.log(transaction)
     
 

@@ -12,12 +12,10 @@ var vm = new Vue({
     },
     methods: {
         submitBuyTransaction: () => {
-            ipcRenderer.send('new-buy-request', vm.amountToBuy)
-            vm.message = 'DVCTokens bought !'               
+            ipcRenderer.send('new-buy-request', vm.amountToBuy)        
         },
         submitSellTransaction: () => {
-            ipcRenderer.send('new-sell-request', vm.amountToSell)
-            vm.message = 'DVCTokens selled !'               
+            ipcRenderer.send('new-sell-request', vm.amountToSell)          
         },
         openTwoFactorAuth: (action) => {
             ipcRenderer.send('open-twofactorauth-request', action)
@@ -47,12 +45,18 @@ ipcRenderer.on('tokens-data-push', (event, tokenObject) => {
 });
 
 ipcRenderer.on('new-tokens-response', (event, data) => {
-    if(data.winner) {
-        vm.winner = data.winner
-        vm.message = 'Congratulations! You won!'
-    } else {
-        vm.error = 'Nope, wrong number. Try again!'
+    vm.error = ''
+    vm.message = ''
+    try{
+        if(data.data.logs[0].topics[0] == '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef') {
+            vm.message = 'DVCTokens Bought !'
+        } else {
+            vm.message = 'DVCTokens Selled !'
+        }
+    } catch(err) {
+        vm.error = 'Transaction Failed !' + data.logs[0].topics[0]
     }
+
 })
 
 
@@ -65,5 +69,6 @@ ipcRenderer.on('valid-otp-sell', (event) => {
 })
 
 ipcRenderer.on('error-push', (event, message) => {
+    vm.message = ''
     vm.error = message
 })

@@ -17,21 +17,23 @@ async function getTokensData(fromWalletId) {
         let DVCTokenSaleAddress = addresses[1]
         let tokenInstance = await _getTokensInstance(addresses[0])
         let tokenSaleInstance = await _getTokensSaleInstance(addresses[1])
-        let balance = await tokenInstance.methods.balanceOf(walletAddress).call()
+        let userBalanceinDVC = await tokenInstance.methods.balanceOf(walletAddress).call()
         let tokenPrice = await tokenSaleInstance.methods.tokenPrice().call()
         let tokensSold = await tokenSaleInstance.methods.tokensSold().call()
         let tokenSaleBalanceinWei = await web3.eth.getBalance(addresses[1])
+        let tokenSaleBalanceinETH = web3.utils.fromWei(tokenSaleBalanceinWei, 'ether')
         let userBalanceinWei = await web3.eth.getBalance(walletAddress)
+        let userBalanceinETH = web3.utils.fromWei(userBalanceinWei, 'ether')
         let tokenSaleBalance = await tokenInstance.methods.balanceOf(addresses[1]).call()
 
         
         return { 
-            balance,
+            userBalanceinDVC,
             tokenPrice,
             tokensSold,
-            tokenSaleBalanceinWei,
+            tokenSaleBalanceinETH,
             tokenSaleBalance,
-            userBalanceinWei,
+            userBalanceinETH,
             DVCTokenAddress,
             DVCTokenSaleAddress
         }
@@ -117,7 +119,9 @@ async function sellTokens(amountToSell, fromWalletId) {
             return transaction
         }
         catch(err){
-            console.log(err)
+            let error = new Error(err)
+            error.statusCode = 500
+            throw error
         }
         
     } else {
