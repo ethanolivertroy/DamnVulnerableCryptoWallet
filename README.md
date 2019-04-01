@@ -3,7 +3,7 @@ Damn Vulnerable Crypto Wallet is an extremely insecure Ethereum cryptowallet wri
 It has three main modules:
 1. **Desktop app**: built with Electron and Vue
 2. **Web API**: built with NodeJS using Express, SQLite and Web3
-3. **Local Ethereum blockchain**: built using Truffle and Ganache-cli
+3. **Local Ethereum blockchain**: built using Truffle and Ganache-cli with deployed smart contracts written in Solidity
 
 ## Setup
 > Note: The following steps **are the preferred way** of running the whole application. For those who would rather build the project from the sources, there's a README in each module's folder with detailed explanations for each case.
@@ -31,11 +31,7 @@ wever, bear in mind that many patterns and practices used are totally custom, de
 - Attach a message to any transaction
 - Two-factor authentication
 - Profile management
-- Interact with smart contracts: DVCToken & DVCTokenSale and exploit the following vulnerabilities:
-    - Inadequate access control
-    - Overflows and Underflows
-    - Bad Randomness
-    - Reentrancy
+- Interact with smart contracts: DVCToken & DVCTokenSale 
 
 ## List of Vulnerabilities
 Vulnerabilities can be found in the Electron application, the web API or in the Ethereum smart contracts deployed to the local blockchain.
@@ -53,7 +49,14 @@ These include:
 11. Path traversal
 12. CORS misconfiguration
 13. No session management
-14. Vulnerable smart contracts: underflows, missing access controls, reentrancy, bad randomness
+14. Smart contracts vulnerabilities:
+     - Arithmetic misuse (Overflows and Underfows)
+     - Inadequate access controls
+     - Reentrancy
+     - Bad randomness
 
 ## Disclaimer
 We tried to keep the implementation of all Ethereum-related stuff as close as possible to a real cryptowallet. However, bear in mind that many patterns and practices used are totally custom, deprecated and highly insecure, so you should NEVER use this project's code as a template to build your Ethereum wallet, web API or Electron app.
+
+## Tutorial
+To get a basic understanding on how to interact with the client, please refer to the 'Tutorial.md' file

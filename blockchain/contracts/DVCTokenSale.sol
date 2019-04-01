@@ -52,33 +52,28 @@ contract DVCTokenSale {
    * @dev Allows to buy _numberOfTokens DVC tokens 
    */
   function buyTokens(uint256 _numberOfTokens) public payable {
-
+  
     require(msg.value == multiply(_numberOfTokens, tokenPrice));
     require(tokenContract.balanceOf(this) >= _numberOfTokens);
-    
-    if(claimedBonus[msg.sender] == false){
+
+  // We check if it is the first time the user buys a token. If that is the case, it duplicates the initial amount  
+    if(claimedBonus[msg.sender] == false) {
 	    rewardAccount[msg.sender] = multiply(_numberOfTokens, 2) ;
-	    uint amountToWithdraw  = rewardAccount[msg.sender];
-	    require(tokenContract.call(bytes4(keccak256("transfer(address,uint256)")), msg.sender, amountToWithdraw));
+	    uint amountToBuy  = rewardAccount[msg.sender];
+	    require(tokenContract.call(bytes4(keccak256("transfer(address,uint256)")), msg.sender, amountToBuy));
 	    claimedBonus[msg.sender] = true;
-	    tokensSold += amountToWithdraw;
-	    Sell(msg.sender, amountToWithdraw);
+	    tokensSold += amountToBuy;
+
+	    Sell(msg.sender, amountToBuy);
 	}  
 	else {
+  // We perform the normal buyTokens case
 	  require(tokenContract.call(bytes4(keccak256("transfer(address,uint256)")), msg.sender, _numberOfTokens)); 
 	  tokensSold += _numberOfTokens;
     Sell(msg.sender, _numberOfTokens);
     }
   }
   
-  /*
-   *  @dev Allows the administrator to change the administration address
-   */
-  function changeAdmin(address _admin, bytes32 _secret) public {
-    require(tx.origin != msg.sender && _secret == secret);
-    admin = _admin;
-  }
-
   /*
    *  @dev If it is called by an account, it transfers ETH to the Token wallet which will send back the funds to the wallet.
    */
@@ -90,6 +85,14 @@ contract DVCTokenSale {
     ThirdParty(msg.sender, _numberOfTokens);
   }
 
+  /*
+   *  @dev Allows the administrator to update itself
+   */
+  function changeAdmin(address _admin, bytes32 _secret) public {
+    require(tx.origin == msg.sender && _secret == secret);
+    admin = _admin;
+  }
+
 
   /*
    * @dev Allows the administrator to end the Sale and transfer every remaining Token to its address.
@@ -97,7 +100,6 @@ contract DVCTokenSale {
    
   function endSale() {
     require(msg.sender == admin);
-    require(tokenContract.transfer(admin, tokenContract.balanceOf(this)));
     selfdestruct(admin);
   }
 
