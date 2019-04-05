@@ -1,16 +1,21 @@
-let Lottery = artifacts.require('./Lottery.sol')
-let Donations = artifacts.require('./Donations.sol')
-const OWNER = web3.eth.accounts[5]
-const INITIAL_JACKPOT = web3.toWei(50, 'ether')
-const SEED = 87
+let DVCToken = artifacts.require('./DVCToken.sol');
+let DVCTokenSale = artifacts.require('DVCTokenSale.sol');
+const fs = require('fs');
 
-module.exports = function(deployer) {
-    deployer.deploy(Lottery, SEED, {
-        from: OWNER,
-        value: INITIAL_JACKPOT
-    })
-    deployer.deploy(Donations, {
-        from: OWNER,
-        value: web3.toWei(10, 'ether')
-    })
-}
+const ownerDVC = web3.eth.accounts[8];
+const ownerDVCSale = web3.eth.accounts[9];
+const tokensSold = 0;
+const initialSupply = 1000000;
+
+module.exports = function(deployer, accounts) {
+    deployer.deploy(DVCToken, initialSupply, {from: ownerDVC, value: 90000000000000000000}).then(function () {
+     tokenPrice = 1000000000000000000;
+     return deployer.deploy(DVCTokenSale, DVCToken.address, tokenPrice, tokensSold, {from: ownerDVCSale}).then(function () {
+        fs.writeFile('contractAddress.txt', DVCToken.address + ',' + DVCTokenSale.address, function (err) {
+          if (err) throw err;
+        }); 
+        }); 
+      })
+    }
+
+

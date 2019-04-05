@@ -9,8 +9,8 @@ const template  = [
     {
         label: 'View',
         submenu: [
-            {role: 'reload'}
-            /*{role: 'toggledevtools'}*/
+            {role: 'reload'},
+            {role: 'toggledevtools'}
         ]
     },
     {

@@ -23,8 +23,7 @@ server.use(cors({origin: true}))
 server.use('/', router.root)
 server.use('/wallets', router.wallets)
 server.use('/transactions', router.transactions)
-server.use('/lottery', router.lottery)
-server.use('/donations', router.donations)
+server.use('/tokens', router.tokens)
 server.use('/config', router.config)
 server.use((err, req, res, next) => {
     if(!err.statusCode) {
