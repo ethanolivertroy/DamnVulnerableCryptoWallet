@@ -10,7 +10,7 @@ async function execute(callback){
   let DVCTokenSaleAddress = await DVCTokenSale.address;
 
   // GET 
-  let account = await web3.eth.accounts[9];
+  let account = await web3.eth.accounts[7];
   let balance = await DVCToken.balanceOf(DVCTokenSale.address);
   let tokenPrice = 1000000000000000000;
   let tokensAvailable = 750000;
@@ -45,17 +45,17 @@ async function execute(callback){
     let balanceAccount1 = await DVCToken.balanceOf(account);
     console.log("Balance of admin account before transfer: " + balanceAccount1);
 
-    let firstTransfer = await DVCToken.transfer(DVCTokenSaleAddress, tokensAvailable, {from: account});
+    await DVCToken.transfer(DVCTokenSaleAddress, tokensAvailable, {from: account});
 
     console.log("[X] We get the admin account balance to see if the transfer was successful;")
 
-    balanceAccount1 = await DVCToken.balanceOf(account);
+    balanceAccount1 = await DVCToken.balanceOf(DVCTokenSaleAddress);
     console.log("Balance of admin account after transfer: " + balanceAccount1);
 
     console.log("[X] We transfer an additional ETH so it allows to withdraw also the gifted tokens")
 
 
-    let transaction = await web3.eth.sendTransaction({from: account,to: DVCTokenSaleAddress,value: 99000000000000000000})
+    let transaction = await web3.eth.sendTransaction({from: web3.eth.accounts[6],to: DVCTokenSaleAddress,value: 99000000000000000000})
     console.log(transaction)
     
 

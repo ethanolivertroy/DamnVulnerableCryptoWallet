@@ -16,7 +16,7 @@ contract DVCTokenSale {
   uint256 public tokensSold;
   bytes32 private secret;
 
-    event Buy(
+  event Buy(
     address indexed _buyer,
     uint256 _amount
    );

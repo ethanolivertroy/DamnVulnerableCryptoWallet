@@ -142,7 +142,7 @@ function _getTokensSaleInstance(contractAddress) {
 
 function _getContractAddresses() {
     return new Promise((resolve, reject) => {
-      http.get(`http://${process.env.TRUFFLE_HOST}:8000/contractAddress.txt`, res => {
+      http.get(`http://172.18.0.3:8000:8000/contractAddress.txt`, res => {
         res.setEncoding('utf8');
         let body = ''; 
         res.on('data', chunk => body += chunk);
