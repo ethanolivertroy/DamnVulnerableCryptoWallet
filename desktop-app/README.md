@@ -7,8 +7,9 @@
 2. Run the app
 
 ### From sources
-1. Run `yarn install` to install dependencies
-2. Run `yarn start` to start the desktop application
+1. Run `nvm use 8.15.1`
+2. Run `npm install` to install dependencies
+3. Run `npm start` to start the desktop application
 
 ### Packaging the application
 - We use [electron-packager](https://github.com/electron-userland/electron-packager). The script used is `packager.js`.
