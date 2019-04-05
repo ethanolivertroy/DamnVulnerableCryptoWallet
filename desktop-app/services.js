@@ -10,6 +10,7 @@ axios.defaults.baseURL = config.server
 
 // Set proxy settings if configured
 if(config.proxyHost && config.proxyHost.length && config.proxyPort) {
+    console.log('Configuring proxy at: ' + config.proxyHost + ':' + config.proxyPort)
     axios.defaults.proxy = {
         host: config.proxyHost,
         port: config.proxyPort
@@ -27,6 +28,7 @@ axios.interceptors.response.use(
         Message: ${error.response.data.error}`)
         // Throw error message only
         throw new Error(error.response.data.error)
+        
     }
 )
 
@@ -72,24 +74,19 @@ exports.submitTransaction = async (tx, otp) => {
     return axios.post('/transactions/new', {tx})
 }
 
-exports.getLotteryData = async (walletId) => {
+exports.getTokensData = async (walletId) => {
     let queryParams = { params: {fromId: walletId} }
-    return axios.get(`/lottery/${config.lotteryAddress}`, queryParams)
+    return axios.get('/tokens/data', queryParams)
 }
 
-exports.submitBet = async (walletId, guess, betAmount) => {
-    let data = {fromId: walletId, guess, betAmount}
-    return axios.post(`/lottery/${config.lotteryAddress}/submit-bet`, data)
+exports.buyTokens = async (walletId, amountToBuy) => {
+    let data = {fromId: walletId, amountToBuy}
+    return axios.post('/tokens/buy', data)
 }
 
-exports.getDonationsData = async (walletId) => {
-    let queryParams = { params: {fromId: walletId} }
-    return axios.get(`/donations/${config.donationsAddress}`, queryParams)
-}
-
-exports.makeDonation = async (walletId, donationAmount) => {
-    let data = {fromId: walletId, donationAmount}
-    return axios.post(`/donations/${config.donationsAddress}/make-donation`, data)
+exports.sellTokens = async (walletId, amountToSell) => {
+    let data = {fromId: walletId, amountToSell}
+    return axios.post('/tokens/sell', data)
 }
 
 exports.persistData = (data) => {

@@ -4,11 +4,11 @@ services:
     image: trufflesuite/ganache-cli
     command: '--hostname=0.0.0.0 --mnemonic "candy maple cake sugar pudding cream honey rich smooth crumble sweet treat" --db "./"'
     ports:
-     - "8545:8545"
+      - "8545:8545"
 
   truffle:
     build: blockchain
-    command: 'truffle migrate'
+    command:  sh -c './setup.sh'
     links:
      - ganache
 
@@ -16,6 +16,9 @@ services:
     build: web-api
     ports:
      - "3000:3000"
-    command: 'yarn start'
+    command: sh -c './wait-for-ganache.sh -t 80 172.18.0.3:8000 -- npm start'
     depends_on:
      - truffle
+    links:
+     - truffle
+    

@@ -6,6 +6,7 @@ const settings = require('./settings')
 function _createWindow(settings, templateFilename, maximize = false) {
     let win = new BrowserWindow(settings)
     win.loadURL(_getTemplateURL(templateFilename))
+    //win.webContents.openDevTools()
     win.once('ready-to-show', () => {
         if(maximize) {
             win.maximize()
@@ -15,6 +16,7 @@ function _createWindow(settings, templateFilename, maximize = false) {
     win.on('closed', () => {
         win = null
     })
+    return win
 }
 
 function _getTemplateURL(templateName) {
@@ -36,12 +38,12 @@ function createMainWindow() {
 function createTwoFactorAuthWindow() {
     let winSettings = Object.assign({}, settings.twoFactorAuthWindow)
     winSettings.parent = _getWindow(1) || _getWindow(0)
-    _createWindow(winSettings, 'twofa')
+    return _createWindow(winSettings, 'twofa')
 }
 
 /**
  * Launches modal windows that are children of the main window (such as
- * lottery, settings and donations)
+ * tokens and settings )
  * @param {string} templateFilename Name of the template file (without .html extension)
  */
 function _createChildWindow(templateFilename) {
@@ -54,12 +56,8 @@ function createSettingsWindow() {
     _createChildWindow('settings')
 }
 
-function createLotteryWindow() {
-    _createChildWindow('lottery')
-}
-
-function createDonationsWindow() {
-    _createChildWindow('donations')
+function createTokensWindow() {
+    _createChildWindow('tokens')
 }
 
 function createServerSettingsWindow() {
@@ -114,8 +112,7 @@ module.exports = {
     createTwoFactorAuthWindow,
     createServerSettingsWindow,
     createSettingsWindow,
-    createLotteryWindow,
-    createDonationsWindow,
+    createTokensWindow,
     isAnyWindowOpen,
     closeWindow
 }

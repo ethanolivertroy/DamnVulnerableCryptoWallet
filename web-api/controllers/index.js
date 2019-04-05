@@ -1,13 +1,11 @@
 const walletsCtrl = require('./wallets.ctrl')
 const transactionsCtrl = require('./transactions.ctrl')
 const configCtrl = require('./config.ctrl')
-const lotteryCtrl = require('./lottery.ctrl')
-const donationsCtrl = require('./donations.ctrl')
+const tokensCtrl = require('./tokens.ctrl')
 
 module.exports = {
     walletsCtrl,
     transactionsCtrl,
     configCtrl,
-    lotteryCtrl,
-    donationsCtrl
+    tokensCtrl
 }
