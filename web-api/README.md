@@ -9,8 +9,9 @@ This application assumes you have the Ganache-cli service already running on *ho
 
 1. Clone this repository
 2. `cd web-api`
-3. Run `yarn install` (you might as well do it using `npm`)
-4. Run `yarn start`. If everything went well, you should see the message `Started DVCW API on localhost:3000`
+3. `nvm use 8.15.1`
+3. Run `npm install` 
+4. Run `npm start`. If everything went well, you should see the message `Started DVCW API on localhost:3000`
 5. Browse to [http://localhost:3000](http://localhost:3000) to confirm
 
 ### Build using Docker
