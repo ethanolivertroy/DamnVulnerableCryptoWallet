@@ -2,8 +2,9 @@
 
 ### Requirements
 1. [NodeJS 8.1.15](https://nodejs.org) - Install it with NVM.
-2. Truffle and ganache-cli: `npm i -g truffle ganache-cli`
-3. Run `npm install and npm start in each directory (blockchain, desktop-app, web-api) to run each of the services`
+2. Truffle and ganache-cli: `npm i -g truffle@4.1.15 ganache-cli`
+3. Run `nvm use 8.15.1`
+4. Run `npm install and npm start in each directory (desktop-app, web-api) to run each of the services`
 
 ### 1. Start Ganache on port 8545
 - Run `./start-ganache.sh`
@@ -29,13 +30,13 @@ The account (8) 0x6330a553fc93768f612722bb8c2ec78ac90b3bbc is the owner of the D
 The account (9) 0x2932b7a2355d6fecc4b5c0b6bd44cc31df247a2e is the owner of the DVCTokenSale.sol contract (see `migrations/2_deploy_contracts.js`)
 
 ### 2. Compile and deploy contracts
-- Run `truffle compile` and then `truffle migrate`
+- Run `./setup.sh`
+
+*Note: This script will also launch a Python web server on port 8000 to make it possible to the API to get the addresses in which the smart contracts were deployed on the network*
 
 
 ### Other useful commands
 
-#### Start Ganache for testing on port 7545
-- Run `./start-test-ganache.sh`
 
 #### To interact with Ganache's local blockchain
 - Run `truffle console`
