@@ -2,7 +2,7 @@ let DVCToken = artifacts.require('./DVCToken.sol');
 let DVCTokenSale = artifacts.require('DVCTokenSale.sol');
 const fs = require('fs');
 
-const ownerDVC = web3.eth.accounts[7];
+const ownerDVC = web3.eth.accounts[8];
 const ownerDVCSale = web3.eth.accounts[9];
 const tokensSold = 0;
 const initialSupply = 1000000;
