@@ -59,4 +59,4 @@ These include:
 We tried to keep the implementation of all Ethereum-related stuff as close as possible to a real cryptowallet. However, bear in mind that many patterns and practices used are totally custom, deprecated and highly insecure, so you should NEVER use this project's code as a template to build your Ethereum wallet, web API or Electron app.
 
 ## Tutorial
-To get a basic understanding on how to interact with the client, please refer to the 'Tutorial.md' file
+To get a basic understanding on how to interact with the client, please refer to the [Tutorial](Tutorial.md) file
