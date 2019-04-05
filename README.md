@@ -61,6 +61,9 @@ To buy and sell DVCTokens, you need to press on the "Buy & Sell Tokens" button. 
 - Stop: `make stop`
 - Resume: `make resume`
 
+#### Erase Electron application data
+`rm ~/.config/dvcw-desktop-app/*`
+
 #### Fresh restart
 - Run `make reset`
 
