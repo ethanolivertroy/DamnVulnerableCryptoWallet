@@ -141,8 +141,14 @@ function _getTokensSaleInstance(contractAddress) {
 }
 
 function _getContractAddresses() {
+    let url = ""
     return new Promise((resolve, reject) => {
-      let url = `http://${process.env.TRUFFLE_HOST}:8000/contractAddress.txt`
+      if(process.env.TRUFFLE_HOST) {
+        url = `http://${process.env.TRUFFLE_HOST}:8000/contractAddress.txt`
+      }
+      else{
+        url = `http://localhost:8000/contractAddress.txt`
+      }
       console.log("url tokens " + url)
       http.get(url, res => {
         res.setEncoding('utf8');
