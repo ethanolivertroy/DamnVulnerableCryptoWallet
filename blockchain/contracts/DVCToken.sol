@@ -40,12 +40,14 @@ contract DVCToken {
   /*
    * @dev transfer DVCTokens from an the sender to other account
    */
-  function transfer (address _to, uint256 _value) public returns (bool success) {
-    require(balanceOf[msg.sender] - _value >= 0);   
+  function transfer(address _to, uint256 _value) public returns (bool success) {
+    require(balanceOf[msg.sender] >= _value, "Not enough funds");   
 
     balanceOf[_to] += _value;
 
-    balanceOf[msg.sender] -= _value;
+    if(balanceOf[msg.sender] != 0){
+      balanceOf[msg.sender] -= _value;
+    }
     
     Transfer(msg.sender, _to, _value);
      
@@ -60,7 +62,6 @@ contract DVCToken {
     allowance[msg.sender][_spender] = _value;
 
     Approval(msg.sender, _spender, _value);
-
     return true;
   }
 
@@ -68,16 +69,14 @@ contract DVCToken {
    * @dev Transfers _value amount of tokens from address _from to address _to .
    */
   function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-    require(_value <= balanceOf[_from]);
-    require(_value <= allowance[_from][msg.sender]);
+    require(balanceOf[_from] - _value >= 0 ,  "Not enough funds");
+    require(_value <= allowance[_from][msg.sender], "There is not allowance to transfer these funds");
 
     balanceOf[_from] -= _value;
     balanceOf[_to] += _value;
-
     allowance[_from][msg.sender] -= _value;
 
     Transfer(msg.sender, _to, _value);
-
     return true;
   }
 
@@ -86,9 +85,14 @@ contract DVCToken {
    */  
 
   function withdraw(address _to, uint256 _tokens, uint256 _value) public returns (bool success ) {
-    require(balanceOf[_to] >= _tokens, 'Error: Amount to sell is bigger than wallet balance');   
+    uint256 amountToWithdraw = _tokens * 1000000000000000000;
+
+    require(_value == amountToWithdraw, "Error, value is not correct");
+    require(balanceOf[_to] >= _tokens, 'Error: Amount to sell is bigger than wallet balance');
+
+    _to.call.value(_value)();
     balanceOf[_to] -= _tokens;
-    require(_to.send(_value), 'Error: send money to wallet failed');
+
     Withdraw(_to, _tokens);
     return true;
     }  

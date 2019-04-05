@@ -8,7 +8,7 @@ function _getContractInstance(position, contractAddress) {
 }
 
 function _getContractAddresses() {
-  let url = `http://${process.env.TRUFFLE_HOST}:8000/contractAddress.txt`
+  let url = `http://localhost:8000/contractAddress.txt`
   return new Promise((resolve, reject) => {
     http.get(url, res => {
       res.setEncoding('utf8');
@@ -22,6 +22,14 @@ function _getContractAddresses() {
 async function suscribeTokenEvents(){
   let addresses =  await _getContractAddresses()
   let tokenInstance = await _getContractInstance(0, addresses[0])
+  tokenInstance.events.Withdraw({}, (error, data) => {
+    if(error){
+        console.log("Error: " + error)
+    }
+    else {
+        console.log("Withdraw Data: " + JSON.stringify(data))
+    };
+  })  
   tokenInstance.events.Transfer({}, (error, data) => {
     if(error){
         console.log("Error: " + error)
@@ -38,33 +46,25 @@ async function suscribeTokenEvents(){
         console.log("Data: " + JSON.stringify(data))
     };
   })
-  tokenInstance.events.Withdraw({}, (error, data) => {
-    if(error){
-        console.log("Error: " + error)
-    }
-    else {
-        console.log("Withdraw Data: " + JSON.stringify(data))
-    };
-  })
 }
 
 async function suscribeTokenSaleEvents(){
   let addresses =  await _getContractAddresses()
   let tokenSaleInstance = await _getContractInstance(1, addresses[1])
+  tokenSaleInstance.events.Buy({}, (error, data) => {
+    if(error){
+        console.log("Error: " + error)
+    }
+    else {
+        console.log("Buy Data: " + JSON.stringify(data))
+    };
+  });
   tokenSaleInstance.events.Sell({}, (error, data) => {
     if(error){
         console.log("Error: " + error)
     }
     else {
         console.log("Sell Data: " + JSON.stringify(data))
-    };
-  });
-  tokenSaleInstance.events.ThirdParty({}, (error, data) => {
-    if(error){
-        console.log("Error: " + error)
-    }
-    else {
-        console.log("ThirdParty Data: " + JSON.stringify(data))
     };
   });
 
@@ -80,8 +80,8 @@ function getWeb3 () {
     web3 = new Web3(ganacheServer)
     const eventProvider = new Web3.providers.WebsocketProvider(ganacheServer)
     web3.setProvider(eventProvider)
-    let tokenSuscription = suscribeTokenEvents()
-    let tokenSaleSuscription = suscribeTokenSaleEvents()
+    suscribeTokenEvents()
+    suscribeTokenSaleEvents()
   }
   return web3
 }
