@@ -9,6 +9,7 @@ function _getContractInstance(position, contractAddress) {
 
 function _getContractAddresses() {
   let url = `http://${process.env.TRUFFLE_HOST}:8000/contractAddress.txt`
+  console.log("url web3 " + url)
   return new Promise((resolve, reject) => {
     http.get(url, res => {
       res.setEncoding('utf8');
