@@ -45,9 +45,9 @@ Available Accounts
 
 The default account you will be using is **(0) 0x627306090abab3a6e1400e9345bc60c78a8bef57**.
 
-The account (8) 0x6330a553fc93768f612722bb8c2ec78ac90b3bbc is the owner of the DVCToken.sol contract.
+The account **(8) 0x6330a553fc93768f612722bb8c2ec78ac90b3bbc** is the owner of the DVCToken.sol contract.
 
-The account (9) 0x2932b7a2355d6fecc4b5c0b6bd44cc31df247a2e is the owner of the DVCTokenSale.sol contract (see migrations/2_deploy_contracts.js)
+The account **(9) 0x2932b7a2355d6fecc4b5c0b6bd44cc31df247a2e** is the owner of the DVCTokenSale.sol contract (see migrations/2_deploy_contracts.js)
 
 
 Once you enter one of the available accounts on the "To" field, complete the "Amount" and "Message" fields with your desired input and press "Send". This will prompt an OTP window and, once you complete the OTP confirmation and press "Submit", this will generate the transaction.
