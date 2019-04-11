@@ -7,7 +7,7 @@ const ownerDVCSale = web3.eth.accounts[9];
 const tokensSold = 0;
 const initialSupply = 1000000;
 
-module.exports = function(deployer, accounts) {
+module.exports = function(deployer) {
     deployer.deploy(DVCToken, initialSupply, {from: ownerDVC, value: 90000000000000000000}).then(function () {
      tokenPrice = 1000000000000000000;
      return deployer.deploy(DVCTokenSale, DVCToken.address, tokenPrice, tokensSold, {from: ownerDVCSale}).then(function () {
