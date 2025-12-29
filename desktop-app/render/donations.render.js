@@ -1,38 +1,40 @@
 const electron = require('electron')
-const {ipcRenderer} = electron
+const { createApp } = Vue
+const { ipcRenderer } = electron
 
-var vm = new Vue({
-    el: '#donations-root',
-    data: {
-        donationAmount: 0,
-        donationTotal: 0,
-        address: '',
-        error: '',
-        message: ''
+const vm = createApp({
+    data() {
+        return {
+            donationAmount: 0,
+            donationTotal: 0,
+            address: '',
+            error: '',
+            message: ''
+        }
     },
     methods: {
-        makeDonation: () => {
+        makeDonation() {
             if(vm.donationAmount > 0) {
                 ipcRenderer.send('new-donation-request', vm.donationAmount)
             } else {
                 vm.error = 'Please, make sure your donation is greater than zero'
             }
         },
-        openTwoFactorAuth: () => {
+        openTwoFactorAuth() {
             ipcRenderer.send('open-twofactorauth-request')
         },
-        dismissError: () => {
+        dismissError() {
             vm.error = ''
         },
-        dismissMessage: () => {
+        dismissMessage() {
             vm.message = ''
         },
-        openModal: () => {
-            $('#modal-contract').modal({})
-            $('#modal-contract').modal('open')
+        openModal() {
+            M.Modal.init(document.querySelectorAll('.modal'))
+            M.Modal.getInstance(document.getElementById('modal-contract')).open()
         }
     }
-})
+}).mount('#donations-root')
 
 ipcRenderer.send('donations-data-pull')
 document.getElementById('donationAmount').focus()
@@ -41,7 +43,7 @@ ipcRenderer.on('donations-data-push', (event, data) => {
     vm.donationTotal = data.donationTotal
     if(data.address) {
         vm.address = data.address
-    }    
+    }
 })
 
 ipcRenderer.on('new-donation-response', (event) => {

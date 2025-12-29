@@ -1,31 +1,34 @@
 const electron = require('electron')
-const {ipcRenderer} = electron
+const { createApp } = Vue
+const { ipcRenderer } = electron
 
-var vm = new Vue({
-    el: '#register-root',
-    data: {
-        mnemonic: '',
-        phrase: '',
-        password: '',
-        confirm: '',
-        error: ''
+const vm = createApp({
+    data() {
+        return {
+            mnemonic: '',
+            phrase: '',
+            password: '',
+            confirm: '',
+            error: ''
+        }
     },
     methods: {
-        register: () => {
+        register() {
             if(vm.password === vm.confirm) {
                 ipcRenderer.send('register-request', vm.password)
             } else {
                 vm.error = 'Passwords do not match'
             }
         },
-        recover: () => {
+        recover() {
             ipcRenderer.send('recover-wallet-request', vm.phrase)
         },
-        dismissError: () => {
+        dismissError() {
             vm.error = ''
         }
     }
-})
+}).mount('#register-root')
+
 document.getElementById('password').focus()
 ipcRenderer.send('get-mnemonic-request')
 

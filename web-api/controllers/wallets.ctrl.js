@@ -35,7 +35,7 @@ async function createWallet(userMnemonic) {
         // Copy data from existing wallet
         wallet = Object.assign({}, existingWallet)        
     }
-    wallet.mnemonic = (new Buffer(mnemonic)).toString('base64')
+    wallet.mnemonic = Buffer.from(mnemonic).toString('base64')
     wallet.balance = await getWalletBalance(wallet.publicAddress)
 
     return wallet
@@ -169,17 +169,17 @@ function validateWalletId(id) {
 }
 
 function _encrypt(data) {
-    let cipher = crypto.createCipher('rc4', _fromDoubleBase64(config.secureKey))
+    let cipher = crypto.createCipheriv('rc4', Buffer.from(_fromDoubleBase64(config.secureKey)), Buffer.alloc(0))
     let crypted = cipher.update(data, 'utf8', 'hex')
     crypted += cipher.final('hex')
     return crypted
 }
 
 function _decrypt(data) {
-    let decipher = crypto.createDecipher('rc4', _fromDoubleBase64(config.secureKey))
+    let decipher = crypto.createDecipheriv('rc4', Buffer.from(_fromDoubleBase64(config.secureKey)), Buffer.alloc(0))
     let decrypted = decipher.update(data, 'hex', 'utf8')
     decrypted += decipher.final('utf8')
-    return decrypted 
+    return decrypted
 }
 
 function _fromDoubleBase64(data) {

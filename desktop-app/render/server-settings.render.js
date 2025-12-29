@@ -1,15 +1,17 @@
 const electron = require('electron')
-const {ipcRenderer} = electron
+const { createApp } = Vue
+const { ipcRenderer } = electron
 
-var vm = new Vue({
-    el: '#server-settings-root',
-    data: {
-        error: '',
-        message: '',
-        server: ''
+const vm = createApp({
+    data() {
+        return {
+            error: '',
+            message: '',
+            server: ''
+        }
     },
     methods: {
-        saveServerChanges: () => {
+        saveServerChanges() {
             if(vm.server.trim().length > 0) {
                 let init = true
                 let server = vm.server
@@ -19,11 +21,11 @@ var vm = new Vue({
                 vm.error = 'Invalid server address'
             }
         },
-        dismissError: () => {
+        dismissError() {
             vm.error = ''
         },
-        dismissMessage: () => {
+        dismissMessage() {
             vm.message = ''
         }
     }
-})
+}).mount('#server-settings-root')

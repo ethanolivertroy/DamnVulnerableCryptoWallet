@@ -1,22 +1,24 @@
 const electron = require('electron')
-const {ipcRenderer} = electron
+const { createApp } = Vue
+const { ipcRenderer } = electron
 
-var vm = new Vue({
-    el: '#twofa-root',
-    data: {
-        error: '',
-        otp: ''
+const vm = createApp({
+    data() {
+        return {
+            error: '',
+            otp: ''
+        }
     },
     methods: {
-        submit: () => {
+        submit() {
             ipcRenderer.send('otp-submission', vm.otp)
             vm.otp = ''
         },
-        dismissError: () => {
+        dismissError() {
             vm.error = ''
         }
     }
-})
+}).mount('#twofa-root')
 
 document.getElementById('otp').focus()
 

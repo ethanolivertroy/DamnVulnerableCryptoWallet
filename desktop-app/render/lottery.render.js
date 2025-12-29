@@ -1,51 +1,54 @@
 const electron = require('electron')
-const {ipcRenderer} = electron
+const { createApp } = Vue
+const { ipcRenderer } = electron
 const MIN_BET = 10
-var vm = new Vue({
-    el: '#lottery-root',
-    data: {
-        bet: MIN_BET,
-        guess: 0,
-        lastResult: 0,
-        jackpot: 0,
-        winner: false,
-        address: '',
-        error: '',
-        message: ''
+
+const vm = createApp({
+    data() {
+        return {
+            bet: MIN_BET,
+            guess: 0,
+            lastResult: 0,
+            jackpot: 0,
+            winner: false,
+            address: '',
+            error: '',
+            message: ''
+        }
     },
     methods: {
-        submitBet: () => {
+        submitBet() {
             if(vm.bet >= MIN_BET) {
                 if(vm.guess >= 0 && vm.guess <= 46) {
                     ipcRenderer.send('new-bet-request', vm.bet, vm.guess)
                 } else {
                     vm.error = 'Number must be between 0 and 46'
-                }                
+                }
             } else {
                 vm.error = 'Bet must be at least 10 ETH'
             }
         },
-        reclaimJackpot: () => {
+        reclaimJackpot() {
             if(vm.winner) {
                 ipcRenderer.send('reclaim-jackpot-request')
                 vm.winner = false
             }
         },
-        openTwoFactorAuth: () => {
+        openTwoFactorAuth() {
             ipcRenderer.send('open-twofactorauth-request')
         },
-        dismissError: () => {
+        dismissError() {
             vm.error = ''
         },
-        dismissMessage: () => {
+        dismissMessage() {
             vm.message = ''
         },
-        openModal: () => {
-            $('#modal-contract').modal({})
-            $('#modal-contract').modal('open')
+        openModal() {
+            M.Modal.init(document.querySelectorAll('.modal'))
+            M.Modal.getInstance(document.getElementById('modal-contract')).open()
         }
     }
-})
+}).mount('#lottery-root')
 
 ipcRenderer.send('lottery-data-pull')
 

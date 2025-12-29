@@ -1,7 +1,7 @@
 const DonationsContract = artifacts.require('Donations')
 
 contract('Donations test', async (accounts) => {
-    
+
     const OWNER = accounts[5]
     const INITIAL_BALANCE = 20
 
@@ -22,7 +22,7 @@ contract('Donations test', async (accounts) => {
     it('should allow to view the donations made by an account', async () => {
         let instance = await DonationsContract.deployed()
         let donationTotal = await instance.getDonationAmount(OWNER)
-        assert.equal(web3.fromWei(donationTotal, 'ether'), INITIAL_BALANCE)
+        assert.equal(Number(web3.utils.fromWei(donationTotal, 'ether')), INITIAL_BALANCE)
     })
 
     it('should allow donations', async () => {
@@ -30,9 +30,9 @@ contract('Donations test', async (accounts) => {
         let donor = accounts[1]
         await instance.donate({
             from: donor,
-            value: web3.toWei(0.5, 'ether')
+            value: web3.utils.toWei('0.5', 'ether')
         })
         let donationTotal = await instance.getDonationAmount(donor)
-        assert.equal(web3.fromWei(donationTotal, 'ether'), 0.5)
+        assert.equal(Number(web3.utils.fromWei(donationTotal, 'ether')), 0.5)
     })
 })

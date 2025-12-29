@@ -1,23 +1,26 @@
 const electron = require('electron')
-const {ipcRenderer} = electron
+const { createApp } = Vue
+const { ipcRenderer } = electron
 
-var vm = new Vue({
-    el: '#login-root',
-    data: {
-        password: '',
-        error: ''
+const vm = createApp({
+    data() {
+        return {
+            password: '',
+            error: ''
+        }
     },
     methods: {
-        login: () => {            
+        login() {
             ipcRenderer.send('login-request', vm.password)
         },
-        dismissError: () => {
+        dismissError() {
             vm.error = ''
         }
     }
-})
+}).mount('#login-root')
 
 ipcRenderer.on('error-push', (event, message) => {
+    vm.password = vm.password || ''
     vm.error = message
     vm.password = ''
 })

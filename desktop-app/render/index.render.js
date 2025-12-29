@@ -1,64 +1,62 @@
 const electron = require('electron')
 const moment = require('moment')
-const {ipcRenderer} = electron
+const { createApp } = Vue
+const { ipcRenderer } = electron
 
 const maxNumTransactions = 5
-var vm
-
-vm = new Vue({
-    el: '#app-root',
-    data: {
-        wallet: {},
-        transactions: [],
-        tx: {},
-        error: '',
-        currentPage: 1,
-        next: false,
-        message: ''
+const vm = createApp({
+    data() {
+        return {
+            wallet: {},
+            transactions: [],
+            tx: {},
+            error: '',
+            currentPage: 1,
+            next: false,
+            message: ''
+        }
     },
     methods: {
-        sendTransaction: () => {            
+        sendTransaction() {
             if(!vm.tx.message) {
                 vm.tx.message = ''
             }
             ipcRenderer.send('new-transaction-request', vm.tx)
         },
-        copyAddress: () => {            
+        copyAddress() {
             ipcRenderer.send('copy-address')
         },
-        dismissError: () => {
+        dismissError() {
             vm.error = ''
         },
-        dismissMessage: () => {
+        dismissMessage() {
             vm.message = ''
         },
-        changePage: (value) => {
+        changePage(value) {
             vm.currentPage = value
             ipcRenderer.send('change-page-request', vm.currentPage)
         },
-        openSettings: () => {
+        openSettings() {
             ipcRenderer.send('open-settings-request')
         },
-        openLottery: () => {
+        openLottery() {
             ipcRenderer.send('open-lottery-request')
         },
-        openDonations: () => {
+        openDonations() {
             ipcRenderer.send('open-donations-request')
         },
-        openModal: (id) => {
-            $('#modal-' + id).modal({})
-            $('#modal-' + id).modal('open')
+        openModal(id) {
+            M.Modal.init(document.querySelectorAll('.modal'))
+            M.Modal.getInstance(document.getElementById('modal-' + id)).open()
         },
-        openTwoFactorAuth: () => {
+        openTwoFactorAuth() {
             ipcRenderer.send('open-twofactorauth-request')
-        }
-    },
-    filters: {
-        formatDate: (value) => {
+        },
+        formatDate(value) {
             return moment.unix(value).calendar()
         }
     }
-})
+}).mount('#app-root')
 
 ipcRenderer.send('tx-data-pull', vm.currentPage)
 document.getElementById('toAddr').focus()
@@ -71,7 +69,7 @@ ipcRenderer.on('tx-data-push', (event, wallet, transactions, next, tx) => {
     vm.next = next
     // Clear transaction
     vm.tx = tx
-});
+})
 
 ipcRenderer.on('new-transaction-response', (event, tx) => {
     if(vm.transactions.length === maxNumTransactions) {
@@ -85,8 +83,8 @@ ipcRenderer.on('new-transaction-response', (event, tx) => {
     // Update wallet balance
     vm.wallet.balance -= tx.value
     // Show success message
-    vm.message = 'Transaction sent!'    
-});
+    vm.message = 'Transaction sent!'
+})
 
 ipcRenderer.on('change-page-response', (event, data) => {
     vm.transactions = data.transactions

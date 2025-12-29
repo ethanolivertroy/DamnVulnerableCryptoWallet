@@ -1,4 +1,4 @@
-pragma solidity ^0.4.21;
+pragma solidity ^0.8.19;
 
 /**
  * @title Donations
@@ -15,17 +15,21 @@ contract Donations {
     /**
      * @dev Contract constructor
      */
-    function Donations() public payable {
+    constructor() payable {
         owner = msg.sender;
         donations[msg.sender] = msg.value;
     }
 
     /**
      * @dev Allows the owner to send a donation back to the donor who made it
+     * VULN 1: Integer underflow via unchecked block
+     * VULN 2: Reentrancy - call() happens before state update
      */
     function withdrawDonation(address _donor, uint _amount) public onlyOwner {
-        require(donations[_donor] - _amount >= 0);
-        _donor.call.value(_amount)();
+        unchecked {
+            require(donations[_donor] - _amount >= 0);
+        }
+        (bool success, ) = _donor.call{value: _amount}("");
         donations[_donor] -= _amount;
     }
 
@@ -48,8 +52,9 @@ contract Donations {
     /**
      * @dev Private function that allows the owner of the contract
      * to transfer the ownership to another address
+     * VULN: Uses tx.origin instead of msg.sender (vulnerable to phishing)
      */
-    function newOwner(address _newOwner) {
+    function newOwner(address _newOwner) public {
         require(tx.origin == msg.sender);
         owner = _newOwner;
     }

@@ -1,4 +1,4 @@
-pragma solidity ^0.4.21;
+pragma solidity ^0.8.19;
 
 /**
  * @title Lottery
@@ -15,29 +15,31 @@ contract Lottery {
     /**
      * @dev Contract constructor
      */
-    function Lottery(uint _seed) public payable {
+    constructor(uint _seed) payable {
         seed = _seed;
     }
 
     /**
      * @dev Generates a pseudo-random number between 0 and 46
+     * VULN: Uses block.timestamp and blockhash for randomness (exploitable)
      */
     function getRandomNumber(uint _seed) internal view returns (uint8) {
-        return uint8(uint256(keccak256(block.blockhash(block.number), block.timestamp, _seed)) % 47);
+        return uint8(uint256(keccak256(abi.encodePacked(blockhash(block.number), block.timestamp, _seed))) % 47);
     }
 
     /**
      * @dev Throws a random number and compares it to a number chosen by the caller.
      * If the numbers match, the whole jackpot is transferred to the caller.
+     * VULN: Reentrancy - transfer() happens before state update
      * @return True if the caller won. False otherwise.
      */
     function bet(uint8 _bet) public payable returns (bool) {
         require(winner == false && msg.value > 0 && _bet >= 0 && _bet <= 46);
 
         lastResult = getRandomNumber(seed);
-        
+
         if(lastResult == _bet) {
-            msg.sender.transfer(address(this).balance);
+            payable(msg.sender).transfer(address(this).balance);
             winner = true;
         }
         return winner;

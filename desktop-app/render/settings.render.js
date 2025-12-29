@@ -1,64 +1,66 @@
 const electron = require('electron')
 const QRCode = require('qrcode')
-const {ipcRenderer} = electron
+const { createApp } = Vue
+const { ipcRenderer } = electron
 
-var vm = new Vue({
-    el: '#settings-root',
-    data: {
-        error: '',
-        message: '',
-        settings: {
-            password: {
-                old: '',
-                new: ''
-            },
-            profile: {
-                firstname: '',
-                lastname: '',
-                email: ''
-            },
-            qrcode: {
-                data: '',
-                loading: true
-            },
-            server: ''
-        }        
+const vm = createApp({
+    data() {
+        return {
+            error: '',
+            message: '',
+            settings: {
+                password: {
+                    old: '',
+                    new: ''
+                },
+                profile: {
+                    firstname: '',
+                    lastname: '',
+                    email: ''
+                },
+                qrcode: {
+                    data: '',
+                    loading: true
+                },
+                server: ''
+            }
+        }
     },
     methods: {
-        savePasswordChanges: () => {
+        savePasswordChanges() {
             if(vm.settings.password.old.trim().length > 0 && vm.settings.password.new.trim().length > 0) {
-                ipcRenderer.send('change-password-settings-request', vm.settings)    
+                ipcRenderer.send('change-password-settings-request', vm.settings)
             }
             else {
                 vm.error = 'Invalid password'
             }
         },
-        saveServerChanges: () => {
+        saveServerChanges() {
             if(vm.settings.server.trim().length > 0) {
                 let init = false
                 let server = vm.settings.server
-                ipcRenderer.send('change-server-settings-request', {server, init})    
+                ipcRenderer.send('change-server-settings-request', {server, init})
             }
             else {
                 vm.error = 'Invalid server address'
             }
         },
-        saveProfileChanges: () => {
+        saveProfileChanges() {
             if(true) {
-                ipcRenderer.send('change-profile-settings-request', vm.settings)    
+                ipcRenderer.send('change-profile-settings-request', vm.settings)
             }
             else {
                 vm.error = 'Invalid profile settings'
             }
         },
-        dismissError: () => {
+        dismissError() {
             vm.error = ''
         },
-        dismissMessage: () => {
+        dismissMessage() {
             vm.message = ''
         }
     }
-})
+}).mount('#settings-root')
 
 ipcRenderer.send('settings-data-pull')
 

@@ -1,8 +1,8 @@
 ## Local Ethereum blockchain for DVCW
 
 ### Requirements
-1. [NodeJS](https://nodejs.org)
-2. Truffle and ganache-cli: `npm i -g truffle ganache-cli`
+1. [NodeJS](https://nodejs.org) 20.x or later
+2. Truffle 5.x and Ganache 7.x: `npm install -g truffle ganache`
 
 ### 1. Start Ganache on port 7545
 - Run `./start-ganache.sh`
@@ -40,3 +40,13 @@ The account (5) 0x2932b7a2355d6fecc4b5c0b6bd44cc31df247a2e is the owner of all d
 
 #### To interact with Ganache's local blockchain
 - Run `truffle console`
+
+### Contract Vulnerabilities (Preserved in Solidity 0.8.19)
+- **Lottery.sol**:
+  - Bad randomness: Uses `block.timestamp` and `blockhash` (line 26)
+  - Reentrancy: `transfer()` called before state update (line 40)
+  - Private seed accessible: Readable via `web3.eth.getStorageAt(address, 1)` (line 12)
+- **Donations.sol**:
+  - Integer underflow: Via `unchecked` block (line 27)
+  - Reentrancy: `call()` before state update (line 28)
+  - tx.origin: Uses `tx.origin` instead of `msg.sender` for auth (line 53)

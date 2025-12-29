@@ -76,7 +76,7 @@ function _validatePageNumber(page) {
     }
 }
 
-async function _sendTransaction(fromAddr, toAddr, value, privateKey) {   
+async function _sendTransaction(fromAddr, toAddr, value, privateKey) {
     let tx = {
         from: fromAddr,
         to: toAddr,
@@ -84,7 +84,7 @@ async function _sendTransaction(fromAddr, toAddr, value, privateKey) {
         gas: 21000
     }
     let signedTx = await web3.eth.accounts.signTransaction(tx, `0x${privateKey.toString('hex')}`)
-    return web3.eth.sendSignedTransaction(signedTx.rawTransaction)
+    return await web3.eth.sendSignedTransaction(signedTx.rawTransaction)
 }
 
 async function _getBlock(blockNumber) {

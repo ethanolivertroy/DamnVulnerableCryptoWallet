@@ -1,6 +1,6 @@
-FROM node:8.11
+FROM node:20-alpine
 WORKDIR /usr/src/app
-RUN yarn global add truffle
+RUN npm install -g truffle ganache
 COPY . .
 ENV GANACHE_HOST=ganache GANACHE_PORT=8545
 CMD ["truffle", "migrate"]
