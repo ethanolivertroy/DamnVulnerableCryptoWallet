@@ -27,7 +27,7 @@
     "body-parser": "^2.2.1",
     "config": "^1.31.0",
     "cors": "^2.8.4",
-    "ethereumjs-wallet": "^0.6.0",
+    "ethereumjs-wallet": "^1.0.2",
     "express": "^5.2.1",
     "speakeasy": "^2.0.0",
     "web3": "^4.16.0"
